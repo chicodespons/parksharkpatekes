@@ -14,8 +14,6 @@ public class ParkingLot {
     @ManyToOne
     @JoinColumn(name = "fk_division_id")
     private Division division;
-    @Embedded
-    private Name name;
     @OneToOne
     private ContactPerson contactPerson;
     @OneToOne
@@ -24,13 +22,15 @@ public class ParkingLot {
     @Enumerated(EnumType.STRING)
     private Category category;
     private final int price_per_hour;
+    private int presentCapacity;
 
     public ParkingLot() {
-        this(0, 0);
+        this(0, 0, 0);
     }
 
-    public ParkingLot(int max_capacity, int price_per_hour) {
+    public ParkingLot(int max_capacity, int presentCapacity, int price_per_hour) {
         this.max_capacity = max_capacity;
+        this.presentCapacity = presentCapacity;
         this.price_per_hour = price_per_hour;
     }
 }

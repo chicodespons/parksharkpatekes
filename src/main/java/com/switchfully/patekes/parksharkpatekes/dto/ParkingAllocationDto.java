@@ -15,6 +15,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ParkingAllocationDto {
+    private Long allocationId;
     private Member member;
     private ParkingLot parkingLot;
     private boolean active;

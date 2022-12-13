@@ -10,11 +10,9 @@ import javax.validation.constraints.NotNull;
 
 @Getter
 @AllArgsConstructor
-public class ParkingAllocationRequestDto {
+public class EndParkingAllocationRequestDto {
     @Min(1)
     private Long memberId;
-    @NotNull
-    private LicensePlate licensePlate;
     @Min(1)
-    private Long parkingLotId;
+    private Long allocationId;
 }
