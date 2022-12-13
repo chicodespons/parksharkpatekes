@@ -33,4 +33,14 @@ public class ParkingLot {
         this.presentCapacity = presentCapacity;
         this.price_per_hour = price_per_hour;
     }
+
+    public ParkingLot(Division division, Name name, ContactPerson contactPerson, Address address, int max_capacity, Category category, int price_per_hour) {
+        this.division = division;
+        this.name = name;
+        this.contactPerson = contactPerson;
+        this.address = address;
+        this.max_capacity = max_capacity;
+        this.category = category;
+        this.price_per_hour = price_per_hour;
+    }
 }
