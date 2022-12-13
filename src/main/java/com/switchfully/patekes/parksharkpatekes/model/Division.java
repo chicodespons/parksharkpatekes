@@ -18,4 +18,14 @@ public class Division {
     @OneToMany
     @JoinColumn(name = "fk_id")
     private List<Division> subdivisions;
+
+    public Division(String name, String originalName, String director) {
+        this.name = name;
+        this.originalName = originalName;
+        this.director = director;
+    }
+
+    public Division() {
+
+    }
 }
