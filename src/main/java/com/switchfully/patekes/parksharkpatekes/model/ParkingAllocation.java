@@ -19,17 +19,23 @@ public class ParkingAllocation {
     @OneToOne
     private ParkingLot parkingLot;
     private boolean active;
-    private LocalDateTime start_time;
-    private LocalDateTime stop_time;
-    @OneToOne(cascade = CascadeType.ALL)
+    @Column(name = "start_time")
+    private LocalDateTime startTime;
+    @Column(name = "stop_time")
+    private LocalDateTime stopTime;
+    @OneToOne
     private LicensePlate licensePlate;
 
-    public ParkingAllocation(Member member, ParkingLot parkingLot, boolean active, LocalDateTime start_time, LocalDateTime stop_time, LicensePlate licensePlate) {
+    public ParkingAllocation(Member member, ParkingLot parkingLot, LicensePlate licensePlate) {
         this.member = member;
         this.parkingLot = parkingLot;
-        this.active = active;
-        this.start_time = start_time;
-        this.stop_time = stop_time;
+        active = true;
+        startTime = LocalDateTime.now();
         this.licensePlate = licensePlate;
+        updatePresentParkingLotCapacity();
+    }
+
+    private void updatePresentParkingLotCapacity() {
+        parkingLot.setPresentCapacity(parkingLot.getPresentCapacity() + 1);
     }
 }
