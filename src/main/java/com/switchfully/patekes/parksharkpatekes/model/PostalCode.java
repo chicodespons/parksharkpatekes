@@ -8,9 +8,9 @@ import javax.persistence.*;
 @Data
 public class PostalCode {
     @Id
-    @SequenceGenerator(name="postalcode_seq", sequenceName = "postalcode_seq", initialValue = 1)
+    @SequenceGenerator(name="postalcode_seq", sequenceName = "postalcode_seq", initialValue = 1, allocationSize = 1)
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "postalcode_seq")
     private long id;
     private int actualPostalCode;
-    private City cityLabel; // to be an enum
+    private String cityLabel;
 }

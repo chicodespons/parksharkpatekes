@@ -9,7 +9,7 @@ import java.util.List;
 @Data
 public class Division {
     @Id
-    @SequenceGenerator(name="division_seq", sequenceName = "division_seq", initialValue = 1)
+    @SequenceGenerator(name="division_seq", sequenceName = "division_seq", initialValue = 1, allocationSize = 1)
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "division_seq")
     private long id;
     private String name;
