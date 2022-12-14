@@ -19,6 +19,7 @@ import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.test.annotation.DirtiesContext;
 
 import java.util.List;
+import java.util.Locale;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -46,6 +47,7 @@ public class DivisionControllerTest {
 
     @BeforeAll
     public static void setUp() {
+        Locale.setDefault(Locale.ENGLISH);
         JSONObject response = RestAssured
                 .given()
                 .contentType("application/x-www-form-urlencoded")
@@ -91,9 +93,9 @@ public class DivisionControllerTest {
                         .contentType("application/json").body(createDivisionDto)
                         .when().post("/divisions")
                         .then().statusCode(400).and().extract().as(JSONObject.class);
-        assertEquals("mag niet leeg zijn", message.getAsString("name"));
-        assertEquals("mag niet leeg zijn", message.getAsString("originalName"));
-        assertEquals("mag niet leeg zijn", message.getAsString("director"));
+        assertEquals("must not be empty", message.getAsString("name"));
+        assertEquals("must not be empty", message.getAsString("originalName"));
+        assertEquals("must not be empty", message.getAsString("director"));
     }
 //    @Test
 //    void createDivision_whenAdminAndNullFields_thenExceptionAndCustomMessage() {
