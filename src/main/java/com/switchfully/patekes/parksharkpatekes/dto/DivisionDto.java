@@ -1,4 +1,12 @@
 package com.switchfully.patekes.parksharkpatekes.dto;
 
-public record DivisionDto(String name, String originalName, String director) {
+import com.switchfully.patekes.parksharkpatekes.model.Division;
+
+import java.util.List;
+
+public record DivisionDto(Long id,
+                          String name,
+                          String originalName,
+                          String director,
+                          List<DivisionDto> subdivisions) {
 }
