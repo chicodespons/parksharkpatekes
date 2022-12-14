@@ -1,6 +1,7 @@
 package com.switchfully.patekes.parksharkpatekes.model;
 
 import lombok.Data;
+import org.hibernate.action.internal.OrphanRemovalAction;
 
 import javax.persistence.*;
 
@@ -14,9 +15,8 @@ public class ParkingLot {
     @ManyToOne
     @JoinColumn(name = "fk_division_id")
     private Division division;
-    @Embedded
-    private Name name;
-    @OneToOne
+    private String name;
+    @ManyToOne
     private ContactPerson contactPerson;
     @OneToOne
     private Address address;
@@ -24,6 +24,7 @@ public class ParkingLot {
     @Enumerated(EnumType.STRING)
     private Category category;
     private final int price_per_hour;
+    private int present_capacity = 0;
 
     public ParkingLot() {
         this(0, 0);
@@ -34,7 +35,7 @@ public class ParkingLot {
         this.price_per_hour = price_per_hour;
     }
 
-    public ParkingLot(Division division, Name name, ContactPerson contactPerson, Address address, int max_capacity, Category category, int price_per_hour) {
+    public ParkingLot(Division division, String name, ContactPerson contactPerson, Address address, int max_capacity, Category category, int price_per_hour) {
         this.division = division;
         this.name = name;
         this.contactPerson = contactPerson;
