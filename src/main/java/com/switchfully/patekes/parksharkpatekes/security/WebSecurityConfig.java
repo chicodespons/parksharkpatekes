@@ -1,5 +1,6 @@
 package com.switchfully.patekes.parksharkpatekes.security;
 
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -15,11 +16,11 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         http.cors()
                 .and().csrf().disable()
                 .authorizeRequests().antMatchers("/parksharkpatekes/user").permitAll()
-              .anyRequest().authenticated()
+                .anyRequest().authenticated()
                 .and().oauth2ResourceServer().jwt().jwtAuthenticationConverter(jwtAuthenticationConverter());
     }
 
-    public JwtAuthenticationConverter jwtAuthenticationConverter(){
+    public JwtAuthenticationConverter jwtAuthenticationConverter() {
         JwtAuthenticationConverter converter = new JwtAuthenticationConverter();
         converter.setJwtGrantedAuthoritiesConverter(new KeycloakGrantedAuthoritiesConverter());
         return converter;

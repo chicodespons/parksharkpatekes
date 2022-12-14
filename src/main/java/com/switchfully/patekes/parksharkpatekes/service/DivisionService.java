@@ -36,7 +36,7 @@ public class DivisionService {
     public DivisionDto createSubdivision(long parentId, CreateDivisionDto createDivisionDto) throws NoDivisionFoundException {
         Division parentDivision = divisionRepository.findById(parentId).orElseThrow(() -> new NoDivisionFoundException("No division found with the id: " + parentId + " ,the subdivision creation is cancelled."));
         DivisionDto divisionDto = createDivision(createDivisionDto);
-        parentDivision.addSubdivision(divisionRepository.findById(divisionDto.id()).orElseThrow(() -> new NoDivisionFoundException("(2de exception) No division found with the id: " + parentId + " ,the subdivision creation is cancelled.")));
+        parentDivision.addSubdivision(divisionRepository.findById(divisionDto.id()).orElseThrow(() -> new NoDivisionFoundException("No division found with the id: " + parentId + " ,the subdivision creation is cancelled.")));
         return divisionDto;
     }
 
