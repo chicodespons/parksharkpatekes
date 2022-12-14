@@ -1,6 +1,7 @@
 package com.switchfully.patekes.parksharkpatekes.service;
 
-import com.switchfully.patekes.parksharkpatekes.dto.MemberDto;
+import com.switchfully.patekes.parksharkpatekes.dto.NewMemberDto;
+import com.switchfully.patekes.parksharkpatekes.exceptions.KeyCloakCantMakeUserException;
 import com.switchfully.patekes.parksharkpatekes.security.KeyCloakConfig;
 import org.keycloak.admin.client.resource.UsersResource;
 import org.keycloak.representations.idm.UserRepresentation;
@@ -12,20 +13,22 @@ import java.util.Collections;
 @Service
 public class KeyCloakService {
 
-    public void addUser(MemberDto memberDto){
+    public void  addUser(NewMemberDto newMemberDto) throws KeyCloakCantMakeUserException {
         UsersResource usersResource = KeyCloakConfig.getInstance().realm(KeyCloakConfig.realm).users();
-        CredentialRepresentation credentialRepresentation = createPasswordCredentials(memberDto.getPassword());
+        CredentialRepresentation credentialRepresentation = createPasswordCredentials(newMemberDto.getPassword());
 
         UserRepresentation kcUser = new UserRepresentation();
-        kcUser.setUsername(memberDto.getEmail());
+        kcUser.setUsername(newMemberDto.getEmail());
         kcUser.setCredentials(Collections.singletonList(credentialRepresentation));
-        kcUser.setFirstName(memberDto.getFirstname());
-        kcUser.setLastName(memberDto.getLastname());
-        kcUser.setEmail(memberDto.getEmail());
+        kcUser.setFirstName(newMemberDto.getName().getFirstname());
+        kcUser.setLastName(newMemberDto.getName().getLastname());
+        kcUser.setEmail(newMemberDto.getEmail());
         kcUser.setEnabled(true);
         kcUser.setEmailVerified(false);
-        usersResource.create(kcUser);
 
+        if(usersResource.create(kcUser).getStatus() != 201){
+            throw new KeyCloakCantMakeUserException("not possible for keycloak to make user");
+        }
     }
 
     private static CredentialRepresentation  createPasswordCredentials(String password) {
