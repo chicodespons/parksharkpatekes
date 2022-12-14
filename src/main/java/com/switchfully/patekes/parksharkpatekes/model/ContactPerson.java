@@ -3,6 +3,7 @@ package com.switchfully.patekes.parksharkpatekes.model;
 import lombok.Data;
 
 import javax.persistence.*;
+import java.util.Objects;
 
 @Entity
 @Data
@@ -16,6 +17,19 @@ public class ContactPerson {
     private String mobilePhoneNumber;
     private String telephonePhoneNumber;
     private String email;
-    @OneToOne
+    @ManyToOne(cascade = {CascadeType.MERGE, CascadeType.PERSIST})
     private Address address;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ContactPerson that = (ContactPerson) o;
+        return Objects.equals(name, that.name) && Objects.equals(mobilePhoneNumber, that.mobilePhoneNumber) && Objects.equals(telephonePhoneNumber, that.telephonePhoneNumber) && Objects.equals(email, that.email) && Objects.equals(address, that.address);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(name, mobilePhoneNumber, telephonePhoneNumber, email, address);
+    }
 }
