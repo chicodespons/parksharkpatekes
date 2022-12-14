@@ -17,7 +17,7 @@ public class ContactPerson {
     private String mobilePhoneNumber;
     private String telephonePhoneNumber;
     private String email;
-    @ManyToOne(cascade = {CascadeType.MERGE, CascadeType.PERSIST})
+    @OneToOne(cascade = CascadeType.ALL)
     private Address address;
 
     @Override

@@ -46,7 +46,7 @@ public class ParkingLotService {
     private Address checkAddress(Address address) {
         PostalCode tempPC = checkPostalCode(address.getPostalCode());
         address.setPostalCode(tempPC);
-        return address;
+        return addressRepository.save(address);
     }
 
     private ContactPerson checkContactPerson(ContactPerson contactPerson) {
