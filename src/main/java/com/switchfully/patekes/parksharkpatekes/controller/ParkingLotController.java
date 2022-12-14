@@ -8,6 +8,8 @@ import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 import static org.springframework.http.HttpStatus.CREATED;
 
 @RestController
@@ -20,5 +22,11 @@ public class ParkingLotController {
     @ResponseStatus(CREATED)
     public ParkingLotDTO addParkingLot(@RequestBody CreateParkingLotDTO createParkingLotDTO) {
         return parkingLotService.addParkingLot(createParkingLotDTO);
+    }
+
+    @PreAuthorize("hasAuthority('ADMIN')")
+    @GetMapping(path = "list", produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<ParkingLotDTO> getAllParkingLots(){
+        return parkingLotService.getAllParkingLots();
     }
 }
