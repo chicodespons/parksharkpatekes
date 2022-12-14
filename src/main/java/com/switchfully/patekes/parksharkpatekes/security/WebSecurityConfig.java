@@ -13,8 +13,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.cors()
-                .and()
-                .authorizeRequests().anyRequest().authenticated()
+                .and().csrf().disable()
+                .authorizeRequests().antMatchers("/parksharkpatekes/user").permitAll()
+              .anyRequest().authenticated()
                 .and().oauth2ResourceServer().jwt().jwtAuthenticationConverter(jwtAuthenticationConverter());
     }
 
