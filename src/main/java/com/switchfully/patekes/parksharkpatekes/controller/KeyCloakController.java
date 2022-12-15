@@ -29,9 +29,4 @@ public class KeyCloakController {
         memberService.addUser(newMemberDto);
     }
 
-//    @PutMapping(path = "/membershiplevel/{id}", consumes = "application/json")
-//    public void updateMembershipLevel(@RequestBody UpdateMembershipLevelDto updateMembershipLevelDto, @PathVariable Long id, Authentication authentication) throws MemberException {
-//        memberService.updateMembershipLevel(updateMembershipLevelDto, id, authentication);
-//
-//    }
 }
