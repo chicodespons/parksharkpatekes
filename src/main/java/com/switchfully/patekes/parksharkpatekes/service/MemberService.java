@@ -4,22 +4,17 @@ import com.switchfully.patekes.parksharkpatekes.dto.MemberDto;
 import com.switchfully.patekes.parksharkpatekes.dto.NewMemberDto;
 import com.switchfully.patekes.parksharkpatekes.dto.UpdateMembershipLevelDto;
 import com.switchfully.patekes.parksharkpatekes.exceptions.MemberException;
-import com.switchfully.patekes.parksharkpatekes.dto.ParkingLotDTO;
 import com.switchfully.patekes.parksharkpatekes.mapper.MemberMapper;
 import com.switchfully.patekes.parksharkpatekes.model.*;
 import com.switchfully.patekes.parksharkpatekes.repository.AddressRepository;
 import com.switchfully.patekes.parksharkpatekes.repository.LicensePlateRepository;
 import com.switchfully.patekes.parksharkpatekes.repository.MemberRepository;
 import com.switchfully.patekes.parksharkpatekes.repository.PostalCodeRepository;
-import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-
-import java.util.List;
-
-import static org.apache.coyote.http11.Constants.a;
 
 @Service
 public class MemberService {
@@ -43,7 +38,7 @@ public class MemberService {
     public void addUser(NewMemberDto newMemberDto) throws MemberException {
         // alle elementen die gesaved moeten worden in volgorde voor dat de eigenlijke memeber kan gesaved worden
         Member member = memberMapper.CreateMemberfromMemberDto(newMemberDto);
-        MembershipLvl membershipLvl = checkMemberShipLevel(newMemberDto);
+        MembershipLvl membershipLvl = checkMemberShipLevel(newMemberDto.getMembershiplevel());
         member.setMembershipLvl(membershipLvl);
         LicensePlate licensePlate = member.getLicensePlate();
         // save methodes
@@ -71,8 +66,8 @@ public class MemberService {
         return addressRepository.save(address);
     }
 
-    private Member checkMember(Long memberId, String email) throws MemberException {
-        Optional<Member> memberFromDb = memberRepository.findById(memberId);
+    private Member checkMember(Long id, String email) throws MemberException {
+        Optional<Member> memberFromDb = memberRepository.findById(id);
         if (memberFromDb.isEmpty()) {
             throw new MemberException("Could not find specified member.");
         }
@@ -82,14 +77,14 @@ public class MemberService {
         else return memberFromDb.get();
     }
 
-    private MembershipLvl checkMemberShipLevel(NewMemberDto newMemberDto) throws MemberException {
-        if (newMemberDto.getMembershiplevel() == null || newMemberDto.getMembershiplevel().isEmpty() || newMemberDto.getMembershiplevel().equalsIgnoreCase("bronze")) {
+    private MembershipLvl checkMemberShipLevel(String membershiplevel) throws MemberException {
+        if (membershiplevel == null || membershiplevel.isEmpty() || membershiplevel.equalsIgnoreCase("bronze")) {
             return MembershipLvl.BRONZE;
         }
-        else if (newMemberDto.getMembershiplevel().equalsIgnoreCase("silver")) {
+        else if (membershiplevel.equalsIgnoreCase("silver")) {
             return MembershipLvl.SILVER;
         }
-        else if (newMemberDto.getMembershiplevel().equalsIgnoreCase("gold")) {
+        else if (membershiplevel.equalsIgnoreCase("gold")) {
             return MembershipLvl.GOLD;
         }
         else {
@@ -98,9 +93,10 @@ public class MemberService {
     }
 
 
-//    public void updateMembershipLevel(UpdateMembershipLevelDto updateMembershipLevelDto, Long id, String email) throws MemberException {
-//        Member memberToUpdate = checkMember(id, email);
-//        memberToUpdate.setMembershipLvl(checkMemberShipLevel(updateMembershipLevelDto));
-//        memberRepository.save(memberToUpdate);
-//    }
+    public MemberDto updateMembershipLevel(UpdateMembershipLevelDto updateMembershipLevelDto, Long id, String email) throws MemberException {
+        Member memberToUpdate = checkMember(id, email);
+        memberToUpdate.setMembershipLvl(checkMemberShipLevel(updateMembershipLevelDto.membershiplevel()));
+        return memberMapper.toDto(memberRepository.save(memberToUpdate));
+
+    }
 }
