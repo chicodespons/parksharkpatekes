@@ -2,7 +2,6 @@ package com.switchfully.patekes.parksharkpatekes.controller;
 
 
 import com.switchfully.patekes.parksharkpatekes.dto.MemberDto;
-import com.switchfully.patekes.parksharkpatekes.dto.ParkingLotDTO;
 import com.switchfully.patekes.parksharkpatekes.service.MemberService;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -15,7 +14,7 @@ import java.util.List;
 @RestController
 @RequestMapping(path = "member")
 public class MemberController {
-    private MemberService memberService;
+    private final MemberService memberService;
 
     public MemberController(MemberService memberService) {
         this.memberService = memberService;
@@ -26,7 +25,5 @@ public class MemberController {
     public List<MemberDto> getAllMembers(){
         return memberService.getAllMembers();
     }
-
-    @GetMapping
 
 }
