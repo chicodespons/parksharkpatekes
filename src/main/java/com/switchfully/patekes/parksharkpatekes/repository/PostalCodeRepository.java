@@ -10,4 +10,9 @@ public interface PostalCodeRepository extends JpaRepository<PostalCode, Long> {
 
     PostalCode findByCityLabel(String cityLabel);
 
+    PostalCode findByActualPostalCodeAndCityLabel(int postalcode, String cityLabel);
+
+
+
+
 }

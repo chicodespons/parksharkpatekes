@@ -54,7 +54,7 @@ public class DivisionControllerTest {
                 .formParam("password", "password")
                 .formParam("grant_type", "password")
                 .formParam("client_id", "parkshark-patekes")
-                .formParam("client_secret", "X4mrRxpRG1znHLSDbin6UW3BReYaX29f")
+                .formParam("client_secret", "9SqtwsMTNVNqYFG9eP1rGgcgkKGpWNIA")
                 .when()
                 .post("https://keycloak.switchfully.com/auth/realms/parksharkpatekes/protocol/openid-connect/token")
                 .then()

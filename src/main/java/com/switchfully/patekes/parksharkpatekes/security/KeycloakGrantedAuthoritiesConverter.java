@@ -14,12 +14,7 @@ import java.util.stream.Collectors;
 public class KeycloakGrantedAuthoritiesConverter implements Converter<Jwt, Collection<GrantedAuthority>> {
     @Override
     public Collection<GrantedAuthority> convert(Jwt source) {
-//            String email = source.getClaimAsString("email");
-//            List<String> emails = new ArrayList<>();
-//            emails.add(email);
-//            return emails.stream()
-//                    .map(SimpleGrantedAuthority::new)
-//                    .collect(Collectors.toList());
+
 
         Map<String, Object> resourceAccess = source.getClaimAsMap("resource_access");
         Map<String,Object> clientAccess = (Map<String, Object>) resourceAccess.get("parkshark-patekes");
