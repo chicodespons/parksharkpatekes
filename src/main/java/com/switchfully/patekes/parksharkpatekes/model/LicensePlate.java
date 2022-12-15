@@ -13,6 +13,7 @@ public class LicensePlate {
     private String issuingCountry;
     //.getDisplayCountry()
 
+
     public LicensePlate(String plateId, String issuingCountry) {
         this.plateId = plateId;
         this.issuingCountry = issuingCountry;
