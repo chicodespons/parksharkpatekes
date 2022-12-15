@@ -12,7 +12,7 @@ public class KeyCloakConfig {
     final static String serverUrl = "https://keycloak.switchfully.com/auth/";
     public final static String realm = "parksharkpatekes";
     final static String clientId = "parkshark-patekes";
-    final static String clientSecret = "X4mrRxpRG1znHLSDbin6UW3BReYaX29f";
+    final static String clientSecret = "9SqtwsMTNVNqYFG9eP1rGgcgkKGpWNIA";
     final static String userName = "therealadmin";
     final static String password = "password";
 

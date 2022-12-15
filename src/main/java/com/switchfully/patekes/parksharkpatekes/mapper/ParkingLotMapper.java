@@ -14,8 +14,8 @@ public class ParkingLotMapper {
                 parkingLot.getAddress(), parkingLot.getMax_capacity(), parkingLot.getCategory(), parkingLot.getPrice_per_hour());
     }
 
-    public List<ParkingLotDTO> toDTO(List<ParkingLot> allDivisions) {
-        return allDivisions.stream()
+    public List<ParkingLotDTO> toDTO(List<ParkingLot> allLots) {
+        return allLots.stream()
                 .map(this::toDTO)
                 .toList();
     }
