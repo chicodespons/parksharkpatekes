@@ -14,13 +14,13 @@ import java.util.NoSuchElementException;
 @Service
 @Transactional
 public class ParkingLotService {
-    private ParkingLotRepository parkingLotRepository;
-    private ParkingLotMapper parkingLotMapper;
-    private DivisionRepository divisionRepository;
-    private AddressRepository addressRepository;
-    private ContactPersonRepository contactPersonRepository;
+    private final ParkingLotRepository parkingLotRepository;
+    private final ParkingLotMapper parkingLotMapper;
+    private final DivisionRepository divisionRepository;
+    private final AddressRepository addressRepository;
+    private final ContactPersonRepository contactPersonRepository;
 
-    private PostalCodeRepository postalCodeRepository;
+    private final PostalCodeRepository postalCodeRepository;
 
     public ParkingLotService(ParkingLotRepository parkingLotRepository, ParkingLotMapper parkingLotMapper, DivisionRepository devisionRepository, AddressRepository addressRepository, ContactPersonRepository contactPersonRepository, PostalCodeRepository postalCodeRepository) {
         this.parkingLotRepository = parkingLotRepository;
