@@ -17,7 +17,7 @@ public class Division {
     private String name;
     private String originalName;
     private String director;
-    @OneToMany
+    @OneToMany(fetch = FetchType.EAGER)
     @JoinColumn(name = "fk_id")
     private List<Division> subdivisions;
 
