@@ -196,7 +196,7 @@ public class ParkingLotControllerTest {
 
     @Test
     @DirtiesContext
-    void createParkingLot_whenAdminGetsListOfMore_HappyPath() {
+    void GetParkingLotList_whenAdminGetsListOfMore_HappyPath() {
         Division testDiv = setUpTestDiv();
         CreateParkingLotDTO createParkingLotDTO = setUpCreateParkingLotDTO(testDiv);
         ParkingLotDTO expectedParkingLotDTO = setUpParkingLotDTO(testDiv);
