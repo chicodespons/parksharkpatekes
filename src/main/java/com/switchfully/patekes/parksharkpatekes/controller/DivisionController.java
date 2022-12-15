@@ -44,7 +44,7 @@ public class DivisionController {
 
     @PreAuthorize("hasAuthority('ADMIN')")
     @GetMapping(params = "name", produces = "application/json")
-    public List<DivisionDto> getDivisionByName(@RequestParam String name) throws NoDivisionFoundException {
+    public List<DivisionDto> getDivisionByName(@RequestParam String name) {
         return divisionService.getDivisionByName(name);
 
     }

@@ -5,6 +5,7 @@ import lombok.Data;
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Entity
 @Data
@@ -33,5 +34,16 @@ public class Division {
         subdivisions.add(subdivision);
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Division division = (Division) o;
+        return Objects.equals(name, division.name) && Objects.equals(originalName, division.originalName) && Objects.equals(director, division.director) && Objects.equals(subdivisions, division.subdivisions);
+    }
 
+    @Override
+    public int hashCode() {
+        return Objects.hash(name, originalName, director, subdivisions);
+    }
 }

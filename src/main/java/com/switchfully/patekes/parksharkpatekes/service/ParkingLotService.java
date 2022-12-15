@@ -8,6 +8,7 @@ import com.switchfully.patekes.parksharkpatekes.repository.*;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.List;
 import java.util.NoSuchElementException;
 
 @Service
@@ -30,6 +31,10 @@ public class ParkingLotService {
         this.postalCodeRepository = postalCodeRepository;
     }
 
+    public List<ParkingLotDTO> getAllParkingLots() {
+        return parkingLotMapper.toDTO(parkingLotRepository.findAll());
+    }
+
     public ParkingLotDTO addParkingLot(CreateParkingLotDTO createParkingLotDTO) throws NoSuchElementException {
         Division div = divisionRepository.findById(createParkingLotDTO.divisionID()).orElseThrow(NoSuchElementException::new);
         ParkingLot parkingLot = new ParkingLot(div , createParkingLotDTO.name(), checkContactPerson(createParkingLotDTO.contactPerson()),
@@ -46,7 +51,7 @@ public class ParkingLotService {
     private Address checkAddress(Address address) {
         PostalCode tempPC = checkPostalCode(address.getPostalCode());
         address.setPostalCode(tempPC);
-        return address;
+        return addressRepository.save(address);
     }
 
     private ContactPerson checkContactPerson(ContactPerson contactPerson) {

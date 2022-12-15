@@ -2,6 +2,7 @@ package com.switchfully.patekes.parksharkpatekes.service;
 
 import com.switchfully.patekes.parksharkpatekes.dto.EndParkingAllocationRequestDto;
 import com.switchfully.patekes.parksharkpatekes.dto.ParkingAllocationDto;
+import com.switchfully.patekes.parksharkpatekes.dto.ParkingAllocationOverviewDto;
 import com.switchfully.patekes.parksharkpatekes.dto.StartParkingAllocationRequestDto;
 import com.switchfully.patekes.parksharkpatekes.exceptions.LicencePlateException;
 import com.switchfully.patekes.parksharkpatekes.exceptions.MemberException;
@@ -13,9 +14,19 @@ import com.switchfully.patekes.parksharkpatekes.repository.LicensePlateRepositor
 import com.switchfully.patekes.parksharkpatekes.repository.MemberRepository;
 import com.switchfully.patekes.parksharkpatekes.repository.ParkingAllocationRepository;
 import com.switchfully.patekes.parksharkpatekes.repository.ParkingLotRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.jaxb.SpringDataJaxb;
 import org.springframework.stereotype.Service;
 
+import javax.persistence.EntityManager;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.ParameterExpression;
+import javax.persistence.criteria.Root;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -26,13 +37,15 @@ public class ParkingAllocationService {
     private final MemberRepository memberRepository;
     private final ParkingLotRepository parkingLotRepository;
     private final LicensePlateRepository licensePlateRepository;
+    private final EntityManager entityManager;
 
-    public ParkingAllocationService(ParkingAllocationMapper parkingAllocationMapper, ParkingAllocationRepository parkingAllocationRepository, MemberRepository memberRepository, ParkingLotRepository parkingLotRepository, LicensePlateRepository licensePlateRepository) {
+    public ParkingAllocationService(ParkingAllocationMapper parkingAllocationMapper, ParkingAllocationRepository parkingAllocationRepository, MemberRepository memberRepository, ParkingLotRepository parkingLotRepository, LicensePlateRepository licensePlateRepository, EntityManager entityManager) {
         this.parkingAllocationMapper = parkingAllocationMapper;
         this.parkingAllocationRepository = parkingAllocationRepository;
         this.memberRepository = memberRepository;
         this.parkingLotRepository = parkingLotRepository;
         this.licensePlateRepository = licensePlateRepository;
+        this.entityManager = entityManager;
     }
 
 
@@ -108,8 +121,24 @@ public class ParkingAllocationService {
         return true;
     }
 
-    public List<ParkingAllocationDto> getAllAllocations() {
-        List<ParkingAllocation> parkingAllocationList = parkingAllocationRepository.findAllByOrderByStartTimeAsc();
-        return parkingAllocationMapper.toDto(parkingAllocationList);
+    public List<ParkingAllocationOverviewDto> getAllAllocations(int limit, Optional<Boolean> isActive, boolean ascending) {
+        List<ParkingAllocation> parkingAllocationList;
+        Sort sortingOrder = defineSortingOrder(ascending);
+
+        if (isActive.isEmpty()) {
+            parkingAllocationList = parkingAllocationRepository.findAll(PageRequest.of(0, limit, sortingOrder)).getContent();
+        } else {
+            parkingAllocationList = parkingAllocationRepository.findAllByActive(PageRequest.of(0, limit, sortingOrder), isActive.get());
+        }
+
+        return parkingAllocationMapper.toOverviewDto(parkingAllocationList);
+    }
+
+    private Sort defineSortingOrder(boolean ascending) {
+        if (ascending) {
+            return Sort.by(Sort.Direction.ASC, "startTime");
+        } else {
+            return Sort.by(Sort.Direction.DESC, "startTime");
+        }
     }
 }

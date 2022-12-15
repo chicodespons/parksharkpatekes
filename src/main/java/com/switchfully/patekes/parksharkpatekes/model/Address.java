@@ -17,6 +17,15 @@ public class Address {
     @ManyToOne
     private PostalCode postalCode;
 
+    public Address(String streetName, int number, PostalCode postalCode) {
+        this.streetName = streetName;
+        this.number = number;
+        this.postalCode = postalCode;
+    }
+
+    public Address() {
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

@@ -17,8 +17,19 @@ public class ContactPerson {
     private String mobilePhoneNumber;
     private String telephonePhoneNumber;
     private String email;
-    @ManyToOne(cascade = {CascadeType.MERGE, CascadeType.PERSIST})
+    @OneToOne(cascade = CascadeType.ALL)
     private Address address;
+
+    public ContactPerson(Name name, String mobilePhoneNumber, String telephonePhoneNumber, String email, Address address) {
+        this.name = name;
+        this.mobilePhoneNumber = mobilePhoneNumber;
+        this.telephonePhoneNumber = telephonePhoneNumber;
+        this.email = email;
+        this.address = address;
+    }
+
+    public ContactPerson() {
+    }
 
     @Override
     public boolean equals(Object o) {
