@@ -2,7 +2,6 @@ package com.switchfully.patekes.parksharkpatekes.model;
 
 import lombok.Data;
 import javax.persistence.*;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
@@ -21,7 +20,6 @@ public class Member {
     private MembershipLvl membershipLvl;
     @OneToOne
     private LicensePlate licensePlate;
-
     private LocalDateTime registrationDate;
     @OneToOne
     private Address address;
