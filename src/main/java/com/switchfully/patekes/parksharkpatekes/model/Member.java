@@ -4,6 +4,7 @@ import lombok.Data;
 import javax.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 @Entity
 @Data
@@ -39,5 +40,17 @@ public class Member {
 
     public Member() {
 
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Member member)) return false;
+        return Objects.equals(name, member.name) && Objects.equals(phoneNumber, member.phoneNumber) && Objects.equals(email, member.email) && Objects.equals(password, member.password) && membershipLvl == member.membershipLvl && Objects.equals(licensePlate, member.licensePlate) && Objects.equals(address, member.address);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(name, phoneNumber, email, password, membershipLvl, licensePlate, address);
     }
 }
