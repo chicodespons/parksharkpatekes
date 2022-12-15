@@ -163,7 +163,7 @@ public class ParkingAllocationControllerTest {
 
     NewMemberDto setUpNewMemberDto(LicensePlate fakeLP) {
         return new NewMemberDto("gold@email.com", "gold@email.com", "password", new Name("test", "gold"), "040000000",
-                fakeLP, new Address("teststraat", 201, new PostalCode(9111, "NKW")));
+                fakeLP, new Address("teststraat", 201, new PostalCode(9111, "NKW")), "BRONZE");
     }
 
     @Test
@@ -186,4 +186,26 @@ public class ParkingAllocationControllerTest {
         assertEquals(parkingLotMapper.toDTO(result.getParkingLot()), testParkingLot);
         assertTrue(result.isActive());
     }
+
+//    @Test
+//    @DirtiesContext
+//    void allocateParkingSpotWithDiffrentPlate_whenGoldMember_happyPath() {
+//        Division testDiv = setUpTestDiv();
+//        CreateParkingLotDTO testParkingLotDto = setUpCreateParkingLotDTO(testDiv);
+//        ParkingLotDTO testParkingLot = parkingLotService.addParkingLot(testParkingLotDto);
+//        testLicensePlate = setUpLicensePlate();
+//        LicensePlate testPlate2 = licensePlateRepository.save(new LicensePlate("BBB-222", "NL"));
+//        memberService.addUser(setUpNewMemberDto(testLicensePlate));
+//        StartParkingAllocationRequestDto allocationRequestDto = new StartParkingAllocationRequestDto(testPlate2, testParkingLot.id());
+//
+//        ParkingAllocationDto result =
+//                RestAssured
+//                        .given().port(port).header("Authorization", "Bearer " + goldMemberTokenAsString).contentType("application/json").body(allocationRequestDto)
+//                        .when().post("/parking/allocation")
+//                        .then().statusCode(201).and().extract().as(ParkingAllocationDto.class);
+//
+//        assertEquals(result.getLicensePlate(), testPlate2);
+//        assertEquals(parkingLotMapper.toDTO(result.getParkingLot()), testParkingLot);
+//        assertTrue(result.isActive());
+//    }
 }
