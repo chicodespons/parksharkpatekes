@@ -25,10 +25,10 @@ public class KeyCloakService {
         kcUser.setEmail(newMemberDto.getEmail());
         kcUser.setEnabled(true);
         kcUser.setEmailVerified(false);
-
-        if(usersResource.create(kcUser).getStatus() != 201){
-            throw new KeyCloakCantMakeUserException("not possible for keycloak to make user");
-        }
+        usersResource.create(kcUser);
+//        if(usersResource.create(kcUser).getStatus() != 201){
+//            throw new KeyCloakCantMakeUserException("not possible for keycloak to make user");
+//        }
 
     }
 
