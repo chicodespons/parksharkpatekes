@@ -19,4 +19,14 @@ public class NewMemberDto {
     private Address address;
     private String membershiplevel;
 
+    public NewMemberDto(String username, String email, String password, Name name, String phonenumber, LicensePlate licensePlate, Address address, String membershiplevel) {
+        this.username = username;
+        this.email = email;
+        this.password = password;
+        this.name = name;
+        this.phonenumber = phonenumber;
+        this.licensePlate = licensePlate;
+        this.address = address;
+        this.membershiplevel = membershiplevel;
+    }
 }
