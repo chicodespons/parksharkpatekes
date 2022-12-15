@@ -65,14 +65,17 @@ class KeyCloakControllerTest {
         NewMemberDto newMemberDto = new NewMemberDto("test", "test@email.com", "123456789",
                 new Name("testy", "testerson"),"123456789", new LicensePlate("testplate", "Belgium"),
                 new Address("testmemberstreet", 10, new PostalCode(5555, "DE")),
-                "SILVER");
+                "BRONZE");
+
         Member newMember = memberMapper.CreateMemberfromMemberDto(newMemberDto);
-        RestAssured.given().port(port).header("Authorization", "Bearer " + tokenAsString)
+
+        RestAssured.given().port(port)
                 .contentType("application/json").body(newMemberDto)
                 .when().post("parksharkpatekes/user")
                 .then().statusCode(201);
 
-        assertTrue(memberService.getAllMembersAsMembers().contains(newMember));
+
+                assertTrue(memberService.getAllMembersAsMembers().contains(newMember));
 
     }
 }

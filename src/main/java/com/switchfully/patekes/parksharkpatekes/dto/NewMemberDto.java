@@ -55,4 +55,7 @@ public class NewMemberDto {
         this.address = address;
         this.membershiplevel = membershiplevel;
     }
+
+    public NewMemberDto() {
+    }
 }

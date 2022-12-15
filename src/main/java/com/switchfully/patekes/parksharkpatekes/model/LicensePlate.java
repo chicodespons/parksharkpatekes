@@ -4,6 +4,7 @@ import lombok.Data;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import java.util.Objects;
 
 @Entity
 @Data
@@ -20,5 +21,17 @@ public class LicensePlate {
     }
 
     public LicensePlate() {
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof LicensePlate that)) return false;
+        return Objects.equals(plateId, that.plateId) && Objects.equals(issuingCountry, that.issuingCountry);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(plateId, issuingCountry);
     }
 }
