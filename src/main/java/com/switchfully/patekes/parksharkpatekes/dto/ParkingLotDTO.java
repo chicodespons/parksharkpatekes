@@ -19,9 +19,4 @@ public record ParkingLotDTO(long id,
         ParkingLotDTO that = (ParkingLotDTO) o;
         return max_capacity == that.max_capacity && price_per_hour == that.price_per_hour && Objects.equals(division, that.division) && Objects.equals(name, that.name) && Objects.equals(contactPerson, that.contactPerson) && Objects.equals(address, that.address) && category == that.category;
     }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(division, name, contactPerson, address, max_capacity, category, price_per_hour);
-    }
 }
