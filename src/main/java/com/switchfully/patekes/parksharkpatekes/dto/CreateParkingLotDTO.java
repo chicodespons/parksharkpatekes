@@ -1,6 +1,8 @@
 package com.switchfully.patekes.parksharkpatekes.dto;
 
-import com.switchfully.patekes.parksharkpatekes.model.*;
+import com.switchfully.patekes.parksharkpatekes.model.Address;
+import com.switchfully.patekes.parksharkpatekes.model.Category;
+import com.switchfully.patekes.parksharkpatekes.model.ContactPerson;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;

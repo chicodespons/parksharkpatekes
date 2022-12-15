@@ -17,8 +17,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.annotation.DirtiesContext;
 
-import java.util.Locale;
-
 import static org.junit.jupiter.api.Assertions.*;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureTestDatabase
@@ -61,6 +59,7 @@ class KeyCloakControllerTest {
     }
 
     @Test
+    @DirtiesContext
     void createUser_whenGivenGoodDTO_addMemberToDatabase() throws MemberException {
         NewMemberDto newMemberDto = new NewMemberDto("test", "test@email.com", "123456789",
                 new Name("testy", "testerson"),"123456789", new LicensePlate("testplate", "Belgium"),

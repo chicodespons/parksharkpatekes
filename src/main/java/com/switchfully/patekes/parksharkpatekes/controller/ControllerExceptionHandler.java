@@ -1,6 +1,7 @@
 package com.switchfully.patekes.parksharkpatekes.controller;
 
 import com.switchfully.patekes.parksharkpatekes.exceptions.*;
+import net.minidev.json.parser.ParseException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +18,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
+import static org.springframework.http.HttpStatus.I_AM_A_TEAPOT;
 
 @ControllerAdvice
 public class ControllerExceptionHandler extends ResponseEntityExceptionHandler {
@@ -48,6 +50,11 @@ public class ControllerExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(KeyCloakCantMakeUserException.class)
     protected void keyCloakCantMakeUserException(KeyCloakCantMakeUserException ex, HttpServletResponse response) throws IOException {
         response.sendError(BAD_REQUEST.value(), ex.getMessage());
+    }
+
+    @ExceptionHandler(ParseException.class)
+    protected void keyCloakCantMakeUserException(ParseException ex, HttpServletResponse response) throws IOException {
+        response.sendError(I_AM_A_TEAPOT.value(), "An unexpected error occurred while parsing JWT token:\n" + ex.getMessage());
     }
 
     @Override

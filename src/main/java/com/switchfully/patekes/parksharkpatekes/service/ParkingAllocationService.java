@@ -2,6 +2,7 @@ package com.switchfully.patekes.parksharkpatekes.service;
 
 import com.switchfully.patekes.parksharkpatekes.dto.EndParkingAllocationRequestDto;
 import com.switchfully.patekes.parksharkpatekes.dto.ParkingAllocationDto;
+import com.switchfully.patekes.parksharkpatekes.dto.ParkingAllocationOverviewDto;
 import com.switchfully.patekes.parksharkpatekes.dto.StartParkingAllocationRequestDto;
 import com.switchfully.patekes.parksharkpatekes.exceptions.LicencePlateException;
 import com.switchfully.patekes.parksharkpatekes.exceptions.MemberException;
@@ -13,8 +14,13 @@ import com.switchfully.patekes.parksharkpatekes.repository.LicensePlateRepositor
 import com.switchfully.patekes.parksharkpatekes.repository.MemberRepository;
 import com.switchfully.patekes.parksharkpatekes.repository.ParkingAllocationRepository;
 import com.switchfully.patekes.parksharkpatekes.repository.ParkingLotRepository;
+import com.switchfully.patekes.parksharkpatekes.security.TokenDecoder;
+import net.minidev.json.parser.ParseException;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import javax.persistence.EntityManager;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -26,20 +32,22 @@ public class ParkingAllocationService {
     private final MemberRepository memberRepository;
     private final ParkingLotRepository parkingLotRepository;
     private final LicensePlateRepository licensePlateRepository;
+    private final EntityManager entityManager;
 
-    public ParkingAllocationService(ParkingAllocationMapper parkingAllocationMapper, ParkingAllocationRepository parkingAllocationRepository, MemberRepository memberRepository, ParkingLotRepository parkingLotRepository, LicensePlateRepository licensePlateRepository) {
+    public ParkingAllocationService(ParkingAllocationMapper parkingAllocationMapper, ParkingAllocationRepository parkingAllocationRepository, MemberRepository memberRepository, ParkingLotRepository parkingLotRepository, LicensePlateRepository licensePlateRepository, EntityManager entityManager) {
         this.parkingAllocationMapper = parkingAllocationMapper;
         this.parkingAllocationRepository = parkingAllocationRepository;
         this.memberRepository = memberRepository;
         this.parkingLotRepository = parkingLotRepository;
         this.licensePlateRepository = licensePlateRepository;
+        this.entityManager = entityManager;
     }
 
 
-    public ParkingAllocationDto allocateParkingSpot(StartParkingAllocationRequestDto parkingAllocationRequestDto) throws MemberException, ParkingLotException, LicencePlateException {
-        Member member = validateMember(parkingAllocationRequestDto.getMemberId());
+    public ParkingAllocationDto allocateParkingSpot(String authorization, StartParkingAllocationRequestDto parkingAllocationRequestDto) throws MemberException, ParkingLotException, LicencePlateException, ParseException {
+        Member member = validateMember(authorization);
         ParkingLot parkingLot = validateParkingLot(parkingAllocationRequestDto.getParkingLotId());
-        LicensePlate licensePlate = validateLicensePlate(parkingAllocationRequestDto.getLicensePlate(), member.getMembershipLvl().equals(MembershipLvl.GOLD));
+        LicensePlate licensePlate = validateLicensePlate(parkingAllocationRequestDto.getLicensePlate(), member.getLicensePlate(), member.getMembershipLvl().equals(MembershipLvl.GOLD));
 
         ParkingAllocation newParkingAllocation = new ParkingAllocation(member, parkingLot, licensePlate);
         parkingAllocationRepository.save(newParkingAllocation);
@@ -47,10 +55,10 @@ public class ParkingAllocationService {
         return parkingAllocationMapper.toDto(parkingAllocationRepository.findById(newParkingAllocation.getId()).get());
     }
 
-    private Member validateMember(Long memberId) throws MemberException {
-        Optional<Member> memberFromDb = memberRepository.findById(memberId);
+    private Member validateMember(String authorization) throws MemberException, ParseException {
+        Optional<Member> memberFromDb = memberRepository.findMemberByEmail(TokenDecoder.tokenDecode(authorization));
         if (memberFromDb.isEmpty()) {
-            throw new MemberException("Could not find specified member.");
+            throw new MemberException("Could not find member.");
         }
         return memberFromDb.get();
     }
@@ -65,22 +73,24 @@ public class ParkingAllocationService {
         return parkingLotFromDb.get();
     }
 
-    private LicensePlate validateLicensePlate(LicensePlate licensePlate, boolean hasGoldLevel) throws LicencePlateException {
+    private LicensePlate validateLicensePlate(LicensePlate licensePlate, LicensePlate membersPlate, boolean hasGoldLevel) throws LicencePlateException {
         Optional<LicensePlate> licensePlateFromDb = licensePlateRepository.findById(licensePlate.getPlateId());
         if (licensePlateFromDb.isEmpty() && hasGoldLevel) {
             licensePlateRepository.save(licensePlate);
         } else if (licensePlateFromDb.isEmpty()) {
             throw new LicencePlateException("Could not find license plate.");
+        } else if (!hasGoldLevel && !licensePlateFromDb.get().equals(membersPlate)) {
+            throw new LicencePlateException("Only gold members can register any plate.");
         }
         return licensePlateRepository.findById(licensePlate.getPlateId()).get();
     }
 
-    public ParkingAllocationDto deAllocateParkingSpot(EndParkingAllocationRequestDto endParkingAllocationRequestDto) throws MemberException, ParkingAllocationException {
-        Member member = validateMember(endParkingAllocationRequestDto.getMemberId());
+    public ParkingAllocationDto deAllocateParkingSpot(String authorization, EndParkingAllocationRequestDto endParkingAllocationRequestDto) throws MemberException, ParkingAllocationException, ParseException {
+        Member member = validateMember(authorization);
         ParkingAllocation parkingAllocation = validateParkingAllocation(endParkingAllocationRequestDto.getAllocationId());
         ParkingLot parkingLot = parkingLotRepository.findById(parkingAllocation.getParkingLot().getId()).get();
 
-        if (allInfoIsCorrect(parkingAllocation, endParkingAllocationRequestDto.getMemberId())) {
+        if (allInfoIsCorrect(parkingAllocation, member.getId())) {
             parkingAllocation.setActive(false);
             parkingAllocation.setStopTime(LocalDateTime.now());
             parkingLot.setPresentCapacity(parkingLot.getPresentCapacity() - 1);
@@ -108,8 +118,24 @@ public class ParkingAllocationService {
         return true;
     }
 
-    public List<ParkingAllocationDto> getAllAllocations() {
-        List<ParkingAllocation> parkingAllocationList = parkingAllocationRepository.findAllByOrderByStartTimeAsc();
-        return parkingAllocationMapper.toDto(parkingAllocationList);
+    public List<ParkingAllocationOverviewDto> getAllAllocations(int limit, Optional<Boolean> isActive, boolean ascending) {
+        List<ParkingAllocation> parkingAllocationList;
+        Sort sortingOrder = defineSortingOrder(ascending);
+
+        if (isActive.isEmpty()) {
+            parkingAllocationList = parkingAllocationRepository.findAll(PageRequest.of(0, limit, sortingOrder)).getContent();
+        } else {
+            parkingAllocationList = parkingAllocationRepository.findAllByActive(PageRequest.of(0, limit, sortingOrder), isActive.get());
+        }
+
+        return parkingAllocationMapper.toOverviewDto(parkingAllocationList);
+    }
+
+    private Sort defineSortingOrder(boolean ascending) {
+        if (ascending) {
+            return Sort.by(Sort.Direction.ASC, "startTime");
+        } else {
+            return Sort.by(Sort.Direction.DESC, "startTime");
+        }
     }
 }

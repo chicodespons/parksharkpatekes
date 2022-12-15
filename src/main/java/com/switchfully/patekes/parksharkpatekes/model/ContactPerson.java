@@ -17,7 +17,7 @@ public class ContactPerson {
     private String mobilePhoneNumber;
     private String telephonePhoneNumber;
     private String email;
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne
     private Address address;
 
     public ContactPerson(Name name, String mobilePhoneNumber, String telephonePhoneNumber, String email, Address address) {

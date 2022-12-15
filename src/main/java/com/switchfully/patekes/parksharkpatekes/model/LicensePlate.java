@@ -12,8 +12,6 @@ public class LicensePlate {
     @Id
     private String plateId;
     private String issuingCountry;
-    //.getDisplayCountry()
-
 
     public LicensePlate(String plateId, String issuingCountry) {
         this.plateId = plateId;
