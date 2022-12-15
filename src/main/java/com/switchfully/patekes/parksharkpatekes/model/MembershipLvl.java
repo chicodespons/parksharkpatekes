@@ -1,6 +1,7 @@
 package com.switchfully.patekes.parksharkpatekes.model;
 
 import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
 @AllArgsConstructor
@@ -13,4 +14,6 @@ public enum MembershipLvl {
     private final int monthlyCost;
     private final double parkingSpotAllocationReduction;
     private final int maxAllocationTime;
+
+
 }

@@ -56,6 +56,9 @@ public class MemberService {
         return memberMapper.toDto(memberRepository.findAll());
     }
 
+    public List<Member> getAllMembersAsMembers(){
+        return memberRepository.findAll();
+    }
     private PostalCode checkPostalCode(PostalCode postalCode) {
         PostalCode postalCodeRepo = postalCodeRepository.findByActualPostalCodeAndCityLabel(postalCode.getActualPostalCode(),postalCode.getCityLabel());
         if (postalCodeRepo != null) {
