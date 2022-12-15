@@ -7,6 +7,7 @@ import com.switchfully.patekes.parksharkpatekes.repository.DivisionRepository;
 import com.switchfully.patekes.parksharkpatekes.repository.ParkingLotRepository;
 import com.switchfully.patekes.parksharkpatekes.service.ParkingLotService;
 import io.restassured.RestAssured;
+import io.restassured.common.mapper.TypeRef;
 import net.minidev.json.JSONObject;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -16,6 +17,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.annotation.DirtiesContext;
 
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -23,8 +26,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class ParkingLotControllerTest {
     @LocalServerPort
     private int port;
-    private final static String URL = "https://keycloak.switchfully.com/auth/realms/parksharkpatekes/protocol/openid-connect/token";
-    private static String response;
 
     @Autowired
     private ParkingLotService parkingLotService;
@@ -56,27 +57,76 @@ public class ParkingLotControllerTest {
         return divisionRepository.save(new Division("testDiv", "originalCompany", "testDir"));
     }
 
+    Division setUpTestDiv2() {
+        return divisionRepository.save(new Division("testDiv2", "originalCompany2", "testDir2"));
+    }
+
     CreateParkingLotDTO setUpCreateParkingLotDTO(Division testDiv) {
         return new CreateParkingLotDTO(testDiv.getId(),
-                "testLot2",
+                "testLot1",
                 new ContactPerson(new Name("franky","testman"), "0479586525", "01212121212", "vettige@frank.test",
                         new Address("flodderstraat", 60, new PostalCode(9100, "SNC"))),
                 new Address("flodderstraat", 180, new PostalCode(9100, "SNC")),
+                233,
+                Category.ABOVE_GROUND,
+                5);
+    }
+
+    CreateParkingLotDTO setUpCreateParkingLotDTO2(Division testDiv) {
+        return new CreateParkingLotDTO(testDiv.getId(),
+                "testLot2",
+                new ContactPerson(new Name("frankert","testman"), "04479586525", "012312121212", "vettige2@frank.test",
+                        new Address("flodderstraat", 61, new PostalCode(9100, "SNC"))),
+                new Address("flodderstraat", 181, new PostalCode(9100, "SNC")),
                 1000,
                 Category.ABOVE_GROUND,
                 5);
     }
 
+    CreateParkingLotDTO setUpCreateParkingLotDTO3(Division testDiv) {
+        return new CreateParkingLotDTO(testDiv.getId(),
+                "testLot3",
+                new ContactPerson(new Name("frankyster","testman"), "04579586525", "0123412121212", "vettige3@frank.test",
+                        new Address("flodderstraat", 62, new PostalCode(9100, "SNC"))),
+                new Address("flodderstraat", 182, new PostalCode(9100, "SNC")),
+                100,
+                Category.ABOVE_GROUND,
+                100);
+    }
+
+
     ParkingLotDTO setUpParkingLotDTO(Division testDiv) {
-        return new ParkingLotDTO(1000,
+        return new ParkingLotDTO(1,
                 testDiv,
-                "testLot2",
+                "testLot1",
                 new ContactPerson(new Name("franky","testman"), "0479586525", "01212121212", "vettige@frank.test",
                         new Address("flodderstraat", 60, new PostalCode(9100, "SNC"))),
                 new Address("flodderstraat", 180, new PostalCode(9100, "SNC")),
+                233,
+                Category.ABOVE_GROUND,
+                5);
+    }
+    ParkingLotDTO setUpParkingLotDTO2(Division testDiv) {
+        return new ParkingLotDTO(2,
+                testDiv,
+                "testLot2",
+                new ContactPerson(new Name("frankert","testman"), "04479586525", "012312121212", "vettige2@frank.test",
+                        new Address("flodderstraat", 61, new PostalCode(9100, "SNC"))),
+                new Address("flodderstraat", 181, new PostalCode(9100, "SNC")),
                 1000,
                 Category.ABOVE_GROUND,
                 5);
+    }
+    ParkingLotDTO setUpParkingLotDTO3(Division testDiv) {
+        return new ParkingLotDTO(3,
+                testDiv,
+                "testLot3",
+                new ContactPerson(new Name("frankyster","testman"), "04579586525", "0123412121212", "vettige3@frank.test",
+                        new Address("flodderstraat", 62, new PostalCode(9100, "SNC"))),
+                new Address("flodderstraat", 182, new PostalCode(9100, "SNC")),
+                100,
+                Category.ABOVE_GROUND,
+                100);
     }
 
     @Test
@@ -91,9 +141,93 @@ public class ParkingLotControllerTest {
                         .given().port(port).header("Authorization", "Bearer " + tokenAsString).contentType("application/json").body(createParkingLotDTO)
                         .when().post("/parkinglot/add")
                         .then().statusCode(201).and().extract().as(ParkingLotDTO.class);
-
         assertEquals(result, expectedParkingLotDTO);
     }
 
+    @Test
+    @DirtiesContext
+    void createParkingLot_whenAdminGetsListOfOne_HappyPath() {
+        Division testDiv = setUpTestDiv();
+        CreateParkingLotDTO createParkingLotDTO = setUpCreateParkingLotDTO(testDiv);
+        ParkingLotDTO expectedParkingLotDTO = setUpParkingLotDTO(testDiv);
 
+
+        RestAssured
+                .given().port(port).header("Authorization", "Bearer " + tokenAsString).contentType("application/json").body(createParkingLotDTO)
+                .when().post("/parkinglot/add")
+                .then().statusCode(201);
+        List<ParkingLotDTO> result =
+                RestAssured
+                        .given().port(port).header("Authorization", "Bearer " + tokenAsString).contentType("application/json")
+                        .when().get("/parkinglot/list")
+                        .then().statusCode(200).and().extract().as(new TypeRef<List<ParkingLotDTO>>() {
+                        });
+        assertEquals(result.get(0), expectedParkingLotDTO);
+    }
+
+    @Test
+    @DirtiesContext
+    void createParkingLot_whenAdminGetsListOfTwo_HappyPath() {
+        Division testDiv = setUpTestDiv();
+        CreateParkingLotDTO createParkingLotDTO = setUpCreateParkingLotDTO(testDiv);
+        ParkingLotDTO expectedParkingLotDTO = setUpParkingLotDTO(testDiv);
+
+        Division testDiv2 = setUpTestDiv2();
+        CreateParkingLotDTO createParkingLotDTO2 = setUpCreateParkingLotDTO2(testDiv2);
+        ParkingLotDTO expectedParkingLotDTO2 = setUpParkingLotDTO2(testDiv2);
+
+        RestAssured
+                .given().port(port).header("Authorization", "Bearer " + tokenAsString).contentType("application/json").body(createParkingLotDTO)
+                .when().post("/parkinglot/add")
+                .then().statusCode(201);
+        RestAssured
+                .given().port(port).header("Authorization", "Bearer " + tokenAsString).contentType("application/json").body(createParkingLotDTO2)
+                .when().post("/parkinglot/add")
+                .then().statusCode(201);
+        List<ParkingLotDTO> result =
+                RestAssured
+                        .given().port(port).header("Authorization", "Bearer " + tokenAsString).contentType("application/json")
+                        .when().get("/parkinglot/list")
+                        .then().statusCode(200).and().extract().as(new TypeRef<List<ParkingLotDTO>>() {
+                        });
+        assertEquals(result.get(0), expectedParkingLotDTO);
+        assertEquals(result.get(1), expectedParkingLotDTO2);
+    }
+
+    @Test
+    @DirtiesContext
+    void createParkingLot_whenAdminGetsListOfMore_HappyPath() {
+        Division testDiv = setUpTestDiv();
+        CreateParkingLotDTO createParkingLotDTO = setUpCreateParkingLotDTO(testDiv);
+        ParkingLotDTO expectedParkingLotDTO = setUpParkingLotDTO(testDiv);
+
+        Division testDiv2 = setUpTestDiv2();
+        CreateParkingLotDTO createParkingLotDTO2 = setUpCreateParkingLotDTO2(testDiv2);
+        ParkingLotDTO expectedParkingLotDTO2 = setUpParkingLotDTO2(testDiv2);
+
+        CreateParkingLotDTO createParkingLotDTO3 = setUpCreateParkingLotDTO3(testDiv2);
+        ParkingLotDTO expectedParkingLotDTO3 = setUpParkingLotDTO3(testDiv2);
+
+        RestAssured
+                .given().port(port).header("Authorization", "Bearer " + tokenAsString).contentType("application/json").body(createParkingLotDTO)
+                .when().post("/parkinglot/add")
+                .then().statusCode(201);
+        RestAssured
+                .given().port(port).header("Authorization", "Bearer " + tokenAsString).contentType("application/json").body(createParkingLotDTO2)
+                .when().post("/parkinglot/add")
+                .then().statusCode(201);
+        RestAssured
+                .given().port(port).header("Authorization", "Bearer " + tokenAsString).contentType("application/json").body(createParkingLotDTO3)
+                .when().post("/parkinglot/add")
+                .then().statusCode(201);
+        List<ParkingLotDTO> result =
+                RestAssured
+                        .given().port(port).header("Authorization", "Bearer " + tokenAsString).contentType("application/json")
+                        .when().get("/parkinglot/list")
+                        .then().statusCode(200).and().extract().as(new TypeRef<List<ParkingLotDTO>>() {
+                        });
+        assertEquals(result.get(0), expectedParkingLotDTO);
+        assertEquals(result.get(1), expectedParkingLotDTO2);
+        assertEquals(result.get(2), expectedParkingLotDTO3);
+    }
 }

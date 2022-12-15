@@ -29,6 +29,7 @@ public class KeyCloakService {
         if(usersResource.create(kcUser).getStatus() != 201){
             throw new KeyCloakCantMakeUserException("not possible for keycloak to make user");
         }
+
     }
 
     private static CredentialRepresentation  createPasswordCredentials(String password) {

@@ -6,9 +6,12 @@ import com.switchfully.patekes.parksharkpatekes.exceptions.KeyCloakCantMakeUserE
 import com.switchfully.patekes.parksharkpatekes.exceptions.MemberException;
 import com.switchfully.patekes.parksharkpatekes.service.KeyCloakService;
 import com.switchfully.patekes.parksharkpatekes.service.MemberService;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+
+import javax.servlet.http.HttpServletResponse;
 
 @RestController
 @RequestMapping(path = "parksharkpatekes/user")
@@ -23,7 +26,7 @@ public class KeyCloakController {
     }
 
     @RequestMapping(method = RequestMethod.POST, consumes = "application/json", produces = "application/json")
-    public void createUser(@RequestBody NewMemberDto newMemberDto) throws KeyCloakCantMakeUserException {
+    public void createUser( @RequestBody NewMemberDto newMemberDto) throws KeyCloakCantMakeUserException {
         keyCloakService.addUser(newMemberDto);
         memberService.addUser(newMemberDto);
     }
