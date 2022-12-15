@@ -1,6 +1,7 @@
 package com.switchfully.patekes.parksharkpatekes.controller;
 
 import com.switchfully.patekes.parksharkpatekes.dto.*;
+import com.switchfully.patekes.parksharkpatekes.exceptions.MemberException;
 import com.switchfully.patekes.parksharkpatekes.mapper.ParkingLotMapper;
 import com.switchfully.patekes.parksharkpatekes.model.*;
 import com.switchfully.patekes.parksharkpatekes.repository.*;
@@ -168,7 +169,7 @@ public class ParkingAllocationControllerTest {
 
     @Test
     @DirtiesContext
-    void allocateParkingSpot_whenGoldMember_happyPath() {
+    void allocateParkingSpot_whenGoldMember_happyPath() throws MemberException {
         Division testDiv = setUpTestDiv();
         CreateParkingLotDTO testParkingLotDto = setUpCreateParkingLotDTO(testDiv);
         ParkingLotDTO testParkingLot = parkingLotService.addParkingLot(testParkingLotDto);
