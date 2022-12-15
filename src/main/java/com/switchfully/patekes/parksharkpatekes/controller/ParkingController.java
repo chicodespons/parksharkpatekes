@@ -6,6 +6,7 @@ import com.switchfully.patekes.parksharkpatekes.dto.ParkingAllocationOverviewDto
 import com.switchfully.patekes.parksharkpatekes.dto.StartParkingAllocationRequestDto;
 import com.switchfully.patekes.parksharkpatekes.exceptions.*;
 import com.switchfully.patekes.parksharkpatekes.service.ParkingAllocationService;
+import net.minidev.json.parser.ParseException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.validation.BindingResult;
@@ -45,25 +46,25 @@ public class ParkingController {
         return parkingAllocationService.getAllAllocations(limit, isActive, ascending);
     }
 
-    @PostMapping(path = "allocation/start", consumes = "application/json", produces = "application/json")
+    @PostMapping(path = "allocation", consumes = "application/json", produces = "application/json")
     @ResponseStatus(CREATED)
     @PreAuthorize("hasAnyAuthority('MEMBER')")
     public ParkingAllocationDto allocateParkingSpot(@RequestHeader String authorization, @RequestBody StartParkingAllocationRequestDto startParkingAllocationRequestDto,
-                                                    BindingResult bindingResult) throws ParkingLotException, MemberException, ParkingAllocationException, LicencePlateException {
+                                                    BindingResult bindingResult) throws ParkingLotException, MemberException, ParkingAllocationException, LicencePlateException, ParseException {
         if (bindingResult.hasErrors()) {
             throw new ParkingAllocationException("Some fields were not filled in properly.");
         }
-        return parkingAllocationService.allocateParkingSpot(autorization, startParkingAllocationRequestDto);
+        return parkingAllocationService.allocateParkingSpot(authorization, startParkingAllocationRequestDto);
     }
 
-    @PutMapping(path = "allocation/stop", consumes = "application/json", produces = "application/json")
+    @PutMapping(path = "allocation", consumes = "application/json", produces = "application/json")
     @ResponseStatus(CREATED)
-    @PreAuthorize("hasAnyAuthority('MEMBER')")
-    public ParkingAllocationDto allocateParkingSpot(@RequestBody EndParkingAllocationRequestDto endParkingAllocationRequestDto,
-                                                    BindingResult bindingResult) throws MemberException, ParkingAllocationException {
+//    @PreAuthorize("hasAnyAuthority('MEMBER')")
+    public ParkingAllocationDto deAllocateParkingSpot(@RequestHeader String authorization, @RequestBody EndParkingAllocationRequestDto endParkingAllocationRequestDto,
+                                                    BindingResult bindingResult) throws MemberException, ParkingAllocationException, ParseException {
         if (bindingResult.hasErrors()) {
             throw new ParkingAllocationException("Some fields were not filled in properly.");
         }
-        return parkingAllocationService.deAllocateParkingSpot(endParkingAllocationRequestDto);
+        return parkingAllocationService.deAllocateParkingSpot(authorization, endParkingAllocationRequestDto);
     }
 }

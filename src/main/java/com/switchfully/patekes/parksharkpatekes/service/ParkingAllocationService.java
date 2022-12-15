@@ -21,6 +21,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.jaxb.SpringDataJaxb;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestHeader;
 
 import javax.persistence.EntityManager;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -63,9 +64,9 @@ public class ParkingAllocationService {
     }
 
     private Member validateMember(String authorization) throws MemberException, ParseException {
-        Optional<Member> memberFromDb = memberRepository.findByEmail(TokenDecoder.tokenDecode(authorization));
+        Optional<Member> memberFromDb = memberRepository.findMemberByEmail(TokenDecoder.tokenDecode(authorization));
         if (memberFromDb.isEmpty()) {
-            throw new MemberException("Could not find specified member.");
+            throw new MemberException("Could not find member.");
         }
         return memberFromDb.get();
     }
@@ -90,12 +91,12 @@ public class ParkingAllocationService {
         return licensePlateRepository.findById(licensePlate.getPlateId()).get();
     }
 
-    public ParkingAllocationDto deAllocateParkingSpot(EndParkingAllocationRequestDto endParkingAllocationRequestDto) throws MemberException, ParkingAllocationException {
-        Member member = validateMember(endParkingAllocationRequestDto.getMemberId());
+    public ParkingAllocationDto deAllocateParkingSpot(String authorization, EndParkingAllocationRequestDto endParkingAllocationRequestDto) throws MemberException, ParkingAllocationException, ParseException {
+        Member member = validateMember(authorization);
         ParkingAllocation parkingAllocation = validateParkingAllocation(endParkingAllocationRequestDto.getAllocationId());
         ParkingLot parkingLot = parkingLotRepository.findById(parkingAllocation.getParkingLot().getId()).get();
 
-        if (allInfoIsCorrect(parkingAllocation, endParkingAllocationRequestDto.getMemberId())) {
+        if (allInfoIsCorrect(parkingAllocation, member.getId())) {
             parkingAllocation.setActive(false);
             parkingAllocation.setStopTime(LocalDateTime.now());
             parkingLot.setPresentCapacity(parkingLot.getPresentCapacity() - 1);
