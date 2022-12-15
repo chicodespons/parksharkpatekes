@@ -1,6 +1,5 @@
 package com.switchfully.patekes.parksharkpatekes.model;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
 import lombok.Data;
 
 import javax.persistence.*;

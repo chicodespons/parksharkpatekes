@@ -4,8 +4,8 @@ import com.switchfully.patekes.parksharkpatekes.dto.NewMemberDto;
 import com.switchfully.patekes.parksharkpatekes.exceptions.KeyCloakCantMakeUserException;
 import com.switchfully.patekes.parksharkpatekes.security.KeyCloakConfig;
 import org.keycloak.admin.client.resource.UsersResource;
-import org.keycloak.representations.idm.UserRepresentation;
 import org.keycloak.representations.idm.CredentialRepresentation;
+import org.keycloak.representations.idm.UserRepresentation;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;

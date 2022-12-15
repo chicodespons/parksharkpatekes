@@ -1,7 +1,9 @@
 package com.switchfully.patekes.parksharkpatekes.dto;
 
 import com.switchfully.patekes.parksharkpatekes.model.LicensePlate;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 

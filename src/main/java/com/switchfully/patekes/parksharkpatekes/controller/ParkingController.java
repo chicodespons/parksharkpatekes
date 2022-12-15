@@ -4,7 +4,10 @@ import com.switchfully.patekes.parksharkpatekes.dto.EndParkingAllocationRequestD
 import com.switchfully.patekes.parksharkpatekes.dto.ParkingAllocationDto;
 import com.switchfully.patekes.parksharkpatekes.dto.ParkingAllocationOverviewDto;
 import com.switchfully.patekes.parksharkpatekes.dto.StartParkingAllocationRequestDto;
-import com.switchfully.patekes.parksharkpatekes.exceptions.*;
+import com.switchfully.patekes.parksharkpatekes.exceptions.LicencePlateException;
+import com.switchfully.patekes.parksharkpatekes.exceptions.MemberException;
+import com.switchfully.patekes.parksharkpatekes.exceptions.ParkingAllocationException;
+import com.switchfully.patekes.parksharkpatekes.exceptions.ParkingLotException;
 import com.switchfully.patekes.parksharkpatekes.service.ParkingAllocationService;
 import net.minidev.json.parser.ParseException;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -15,7 +18,8 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Optional;
 
-import static org.springframework.http.HttpStatus.*;
+import static org.springframework.http.HttpStatus.CREATED;
+import static org.springframework.http.HttpStatus.OK;
 
 @RestController
 @RequestMapping("parking")

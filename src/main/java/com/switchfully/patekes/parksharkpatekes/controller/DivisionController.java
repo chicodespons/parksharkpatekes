@@ -3,25 +3,13 @@ package com.switchfully.patekes.parksharkpatekes.controller;
 import com.switchfully.patekes.parksharkpatekes.dto.CreateDivisionDto;
 import com.switchfully.patekes.parksharkpatekes.dto.DivisionDto;
 import com.switchfully.patekes.parksharkpatekes.exceptions.NoDivisionFoundException;
-import com.switchfully.patekes.parksharkpatekes.security.KeycloakJotTokenConverter;
-import com.switchfully.patekes.parksharkpatekes.security.TokenDecoder;
 import com.switchfully.patekes.parksharkpatekes.service.DivisionService;
-import net.minidev.json.JSONObject;
-import net.minidev.json.parser.JSONParser;
-import net.minidev.json.parser.ParseException;
-import org.apache.logging.log4j.spi.LoggerContext;
-import org.jboss.resteasy.util.Base64;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
-import java.util.Objects;
 
-import static java.util.Base64.getUrlDecoder;
 import static org.springframework.http.HttpStatus.CREATED;
 
 

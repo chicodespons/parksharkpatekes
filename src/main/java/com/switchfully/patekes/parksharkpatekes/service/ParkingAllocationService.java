@@ -16,20 +16,12 @@ import com.switchfully.patekes.parksharkpatekes.repository.ParkingAllocationRepo
 import com.switchfully.patekes.parksharkpatekes.repository.ParkingLotRepository;
 import com.switchfully.patekes.parksharkpatekes.security.TokenDecoder;
 import net.minidev.json.parser.ParseException;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.domain.jaxb.SpringDataJaxb;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestHeader;
 
 import javax.persistence.EntityManager;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.ParameterExpression;
-import javax.persistence.criteria.Root;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
