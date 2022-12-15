@@ -43,7 +43,7 @@ public class ParkingLotService {
     }
 
     private PostalCode checkPostalCode(PostalCode postalCode) {
-        PostalCode result = postalCodeRepository.findByCityLabel(postalCode.getCityLabel());
+        PostalCode result = postalCodeRepository.findByActualPostalCodeAndCityLabel(postalCode.getActualPostalCode(),postalCode.getCityLabel());
         if (result != null && result.equals(postalCode)) {return result;}
         return postalCodeRepository.save(postalCode);
     }

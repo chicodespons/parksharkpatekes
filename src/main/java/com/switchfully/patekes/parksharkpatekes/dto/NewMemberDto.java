@@ -33,6 +33,7 @@ public class NewMemberDto {
     @NotNull
     @NotEmpty
     private Address address;
+    private String membershiplevel;
 
     public NewMemberDto(String username, String email, String password, Name name, String phonenumber, LicensePlate licensePlate, Address address) {
         this.username = username;
