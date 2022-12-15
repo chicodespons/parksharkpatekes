@@ -4,8 +4,10 @@ import com.switchfully.patekes.parksharkpatekes.dto.NewMemberDto;
 import com.switchfully.patekes.parksharkpatekes.dto.UpdateMembershipLevelDto;
 import com.switchfully.patekes.parksharkpatekes.exceptions.KeyCloakCantMakeUserException;
 import com.switchfully.patekes.parksharkpatekes.exceptions.MemberException;
+import com.switchfully.patekes.parksharkpatekes.security.TokenDecoder;
 import com.switchfully.patekes.parksharkpatekes.service.KeyCloakService;
 import com.switchfully.patekes.parksharkpatekes.service.MemberService;
+import net.minidev.json.parser.ParseException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
@@ -32,8 +34,9 @@ public class KeyCloakController {
     }
 
 //    @PutMapping(path = "/membershiplevel/{id}", consumes = "application/json")
-//    public void updateMembershipLevel(@RequestBody UpdateMembershipLevelDto updateMembershipLevelDto, @PathVariable Long id, Authentication authentication) throws MemberException {
-//        memberService.updateMembershipLevel(updateMembershipLevelDto, id, authentication);
-//
+//    @PreAuthorize("hasAnyAuthority('MEMBER')")
+//    public void updateMembershipLevel(@RequestBody UpdateMembershipLevelDto updateMembershipLevelDto, @PathVariable Long id, @RequestHeader String token) throws MemberException, ParseException {
+//        String email = TokenDecoder.tokenDecode(token);
+//        memberService.updateMembershipLevel(updateMembershipLevelDto, id, email);
 //    }
 }

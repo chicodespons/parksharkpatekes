@@ -12,6 +12,7 @@ import com.switchfully.patekes.parksharkpatekes.repository.PostalCodeRepository;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
+import java.util.Objects;
 import java.util.Optional;
 
 import static org.apache.coyote.http11.Constants.a;
@@ -63,14 +64,14 @@ public class MemberService {
         return addressRepository.save(address);
     }
 
-    private Member checkMember(Long memberId, Authentication authentication) throws MemberException {
+    private Member checkMember(Long memberId, String email) throws MemberException {
         Optional<Member> memberFromDb = memberRepository.findById(memberId);
         if (memberFromDb.isEmpty()) {
             throw new MemberException("Could not find specified member.");
         }
-//        if (memberFromDb.get().getKeycloakId() == authentication.getName()) {
-//            throw new MemberException("Not authorized");
-//        }
+       if (!Objects.equals(memberFromDb.get().getEmail(), email)) {
+            throw new MemberException("Not authorized, tried to update wrong account");
+        }
         else return memberFromDb.get();
     }
 
@@ -90,8 +91,8 @@ public class MemberService {
     }
 
 
-//    public void updateMembershipLevel(UpdateMembershipLevelDto updateMembershipLevelDto, Long id, Authentication authentication) throws MemberException {
-//        Member memberToUpdate = checkMember(id, authentication);
+//    public void updateMembershipLevel(UpdateMembershipLevelDto updateMembershipLevelDto, Long id, String email) throws MemberException {
+//        Member memberToUpdate = checkMember(id, email);
 //        memberToUpdate.setMembershipLvl(checkMemberShipLevel(updateMembershipLevelDto));
 //        memberRepository.save(memberToUpdate);
 //    }
