@@ -55,7 +55,7 @@ public class ParkingAllocationService {
     public ParkingAllocationDto allocateParkingSpot(String authorization, StartParkingAllocationRequestDto parkingAllocationRequestDto) throws MemberException, ParkingLotException, LicencePlateException, ParseException {
         Member member = validateMember(authorization);
         ParkingLot parkingLot = validateParkingLot(parkingAllocationRequestDto.getParkingLotId());
-        LicensePlate licensePlate = validateLicensePlate(parkingAllocationRequestDto.getLicensePlate(), member.getMembershipLvl().equals(MembershipLvl.GOLD));
+        LicensePlate licensePlate = validateLicensePlate(parkingAllocationRequestDto.getLicensePlate(), member.getLicensePlate(), member.getMembershipLvl().equals(MembershipLvl.GOLD));
 
         ParkingAllocation newParkingAllocation = new ParkingAllocation(member, parkingLot, licensePlate);
         parkingAllocationRepository.save(newParkingAllocation);
@@ -81,12 +81,14 @@ public class ParkingAllocationService {
         return parkingLotFromDb.get();
     }
 
-    private LicensePlate validateLicensePlate(LicensePlate licensePlate, boolean hasGoldLevel) throws LicencePlateException {
+    private LicensePlate validateLicensePlate(LicensePlate licensePlate, LicensePlate membersPlate, boolean hasGoldLevel) throws LicencePlateException {
         Optional<LicensePlate> licensePlateFromDb = licensePlateRepository.findById(licensePlate.getPlateId());
         if (licensePlateFromDb.isEmpty() && hasGoldLevel) {
             licensePlateRepository.save(licensePlate);
         } else if (licensePlateFromDb.isEmpty()) {
             throw new LicencePlateException("Could not find license plate.");
+        } else if (!hasGoldLevel && !licensePlateFromDb.get().equals(membersPlate)) {
+            throw new LicencePlateException("Only gold members can register any plate.");
         }
         return licensePlateRepository.findById(licensePlate.getPlateId()).get();
     }
