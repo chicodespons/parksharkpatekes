@@ -1,6 +1,7 @@
 package com.switchfully.patekes.parksharkpatekes.controller;
 
 import com.switchfully.patekes.parksharkpatekes.dto.ParkingAllocationDto;
+import com.switchfully.patekes.parksharkpatekes.dto.ParkingLotDTO;
 import com.switchfully.patekes.parksharkpatekes.dto.StartParkingAllocationRequestDto;
 import com.switchfully.patekes.parksharkpatekes.mapper.ParkingLotMapper;
 import com.switchfully.patekes.parksharkpatekes.model.*;
@@ -87,51 +88,66 @@ public class ParkingAllocationControllerTest {
         memberTokenAsString = responseMember.getAsString("access_token");
     }
 
-    void setUpVariables() {
-        testPostalCode = setUpPostalcode();
-        testAddress = setupAddress();
-        testMember = setUpMember();
-        testLicensePlate = setUpLicensePlate();
-        testDivision = setUpDivision();
-        testParkingLot = setUpParkingLot();
-    }
+//    void setUpVariables() {
+//        testPostalCode = setUpPostalcode();
+//        testAddress = setupAddress();
+//        testMember = setUpMember();
+//        testLicensePlate = setUpLicensePlate();
+//        testDivision = setUpDivision();
+//        testParkingLot = setUpParkingLot();
+//    }
+//
+//    Division setUpDivision() {
+//        return divisionRepository.save(new Division("testDiv", "originalCompany", "testDir"));
+//    }
+//
+//    LicensePlate setUpLicensePlate() {
+//        return licensePlateRepository.save(new LicensePlate("1TES1", "Belgium"));
+//    }
+//
+//    Address setupAddress() {
+//        return addressRepository.save(new Address("flodderstraat", 180, postalCodeRepository.save(new PostalCode(9100, "SNC"))));
+//    }
+//
+//    PostalCode setUpPostalcode() {
+//        return postalCodeRepository.save(new PostalCode(9100, "SNC"));
+//    }
+//
+//    ContactPerson setupContactPerson() {
+//        return contactPersonRepository.save(new ContactPerson(new Name("franky","testman"), "0479586525", "01212121212", "vettige@frank.test", addressRepository.save(new Address("flodderstraat", 180, postalCodeRepository.save(new PostalCode(9100, "SNC"))))));
+//    }
+//
+//    ParkingLot setUpParkingLot() {
+//        return parkingLotRepository.save(
+//                new ParkingLot(testDivision, "testLot2", contactPersonRepository.save(new ContactPerson(new Name("franky","testman"), "0479586525", "01212121212", "vettige@frank.test", addressRepository.save(new Address("flodderstraat", 180, postalCodeRepository.save(new PostalCode(9100, "SNC")))))), addressRepository.save(new Address("flodderstraat", 180, postalCodeRepository.save(new PostalCode(9100, "SNC")))), 1000, Category.ABOVE_GROUND, 5)
+//        );
+//    }
+//
+//    Member setUpMember() {
+//        return memberRepository.save(
+//                new Member(new Name("Abraham", "Lincoln"), "123", "a@A.com", "a", MembershipLvl.GOLD, testLicensePlate, addressRepository.save(new Address("flodderstraat", 180, postalCodeRepository.save(new PostalCode(9100, "SNC")))))
+//        );
+//    }
 
-    Division setUpDivision() {
+    Division setUpTestDiv() {
         return divisionRepository.save(new Division("testDiv", "originalCompany", "testDir"));
     }
 
-    LicensePlate setUpLicensePlate() {
-        return licensePlateRepository.save(new LicensePlate("1TES1", "Belgium"));
-    }
-
-    Address setupAddress() {
-        return addressRepository.save(new Address("flodderstraat", 180, testPostalCode));
-    }
-
-    PostalCode setUpPostalcode() {
-        return postalCodeRepository.save(new PostalCode(9100, "SNC"));
-    }
-
-    ContactPerson setupContactPerson() {
-        return contactPersonRepository.save(new ContactPerson(new Name("franky","testman"), "0479586525", "01212121212", "vettige@frank.test", testAddress));
-    }
-
-    ParkingLot setUpParkingLot() {
-        return parkingLotRepository.save(
-                new ParkingLot(testDivision, "testLot2", setupContactPerson(), testAddress, 1000, Category.ABOVE_GROUND, 5)
-        );
-    }
-
-    Member setUpMember() {
-        return memberRepository.save(
-                new Member(new Name("Abraham", "Lincoln"), "123", "a@A.com", "a", MembershipLvl.GOLD, testLicensePlate, testAddress)
-        );
+    ParkingLotDTO setUpParkingLotDTO3(Division testDiv) {
+        return new ParkingLotDTO(3,
+                testDiv,
+                "testLot3",
+                new ContactPerson(new Name("frankyster","testman"), "04579586525", "0123412121212", "vettige3@frank.test",
+                        new Address("flodderstraat", 62, new PostalCode(9100, "SNC"))),
+                new Address("flodderstraat", 182, new PostalCode(9100, "SNC")),
+                100,
+                Category.ABOVE_GROUND,
+                100);
     }
 
     @Test
     @DirtiesContext
     void allocateParkingSpot_whenGoldMember_happyPath() {
-//        setUpVariables();
         StartParkingAllocationRequestDto allocationRequestDto = new StartParkingAllocationRequestDto(testMember.getId(), testLicensePlate, testParkingLot.getId());
 
         ParkingAllocationDto result =
