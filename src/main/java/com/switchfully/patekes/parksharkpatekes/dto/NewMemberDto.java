@@ -18,4 +18,13 @@ public class NewMemberDto {
     private LicensePlate licensePlate;
     private Address address;
 
+    public NewMemberDto(String username, String email, String password, Name name, String phonenumber, LicensePlate licensePlate, Address address) {
+        this.username = username;
+        this.email = email;
+        this.password = password;
+        this.name = name;
+        this.phonenumber = phonenumber;
+        this.licensePlate = licensePlate;
+        this.address = address;
+    }
 }

@@ -1,12 +1,10 @@
 package com.switchfully.patekes.parksharkpatekes.controller;
 
-import com.switchfully.patekes.parksharkpatekes.dto.CreateParkingLotDTO;
-import com.switchfully.patekes.parksharkpatekes.dto.ParkingAllocationDto;
-import com.switchfully.patekes.parksharkpatekes.dto.ParkingLotDTO;
-import com.switchfully.patekes.parksharkpatekes.dto.StartParkingAllocationRequestDto;
+import com.switchfully.patekes.parksharkpatekes.dto.*;
 import com.switchfully.patekes.parksharkpatekes.mapper.ParkingLotMapper;
 import com.switchfully.patekes.parksharkpatekes.model.*;
 import com.switchfully.patekes.parksharkpatekes.repository.*;
+import com.switchfully.patekes.parksharkpatekes.service.MemberService;
 import com.switchfully.patekes.parksharkpatekes.service.ParkingLotService;
 import io.restassured.RestAssured;
 import net.minidev.json.JSONObject;
@@ -44,6 +42,9 @@ public class ParkingAllocationControllerTest {
     private ContactPersonRepository contactPersonRepository;
     @Autowired
     private MemberRepository memberRepository;
+
+    @Autowired
+    private MemberService memberService;
     @Autowired
     private ParkingLotMapper parkingLotMapper;
 
@@ -140,9 +141,9 @@ public class ParkingAllocationControllerTest {
 //    }
 //
     Member setUpMember() {
-        return memberRepository.save(
-                new Member(new Name("Abraham", "Lincoln"), "123", "a@A.com", "a", MembershipLvl.GOLD, testLicensePlate, addressRepository.save(new Address("flodderstraat", 180, postalCodeRepository.save(new PostalCode(9100, "SNC")))))
-        );
+        return
+                new Member(new Name("Abraham", "Lincoln"), "123", "gold@email.com", "password", MembershipLvl.GOLD, testLicensePlate, addressRepository.save(new Address("flodderstraat", 180, postalCodeRepository.save(new PostalCode(9100, "SNC")))))
+        ;
     }
 //
     Division setUpTestDiv() {
@@ -160,6 +161,11 @@ public class ParkingAllocationControllerTest {
                 5);
     }
 
+    NewMemberDto setUpNewMemberDto(LicensePlate fakeLP) {
+        return new NewMemberDto("gold@email.com", "gold@email.com", "password", new Name("test", "gold"), "040000000",
+                fakeLP, new Address("teststraat", 201, new PostalCode(9111, "NKW")));
+    }
+
     @Test
     @DirtiesContext
     void allocateParkingSpot_whenGoldMember_happyPath() {
@@ -167,7 +173,7 @@ public class ParkingAllocationControllerTest {
         CreateParkingLotDTO testParkingLotDto = setUpCreateParkingLotDTO(testDiv);
         ParkingLotDTO testParkingLot = parkingLotService.addParkingLot(testParkingLotDto);
         testLicensePlate = setUpLicensePlate();
-//        testMember = setUpMember();
+        memberService.addUser(setUpNewMemberDto(testLicensePlate));
         StartParkingAllocationRequestDto allocationRequestDto = new StartParkingAllocationRequestDto(testLicensePlate, testParkingLot.id());
 
         ParkingAllocationDto result =
