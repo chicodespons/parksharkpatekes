@@ -35,9 +35,11 @@ public class MemberService {
     }
 
 
-    public void addUser(NewMemberDto newMemberDto) {
+    public void addUser(NewMemberDto newMemberDto) throws MemberException {
         // alle elementen die gesaved moeten worden in volgorde voor dat de eigenlijke memeber kan gesaved worden
         Member member = memberMapper.CreateMemberfromMemberDto(newMemberDto);
+        MembershipLvl membershipLvl = checkMemberShipLevel(newMemberDto);
+        member.setMembershipLvl(membershipLvl);
         LicensePlate licensePlate = member.getLicensePlate();
         // save methodes
         licensePlateRepository.save(licensePlate);
@@ -48,8 +50,8 @@ public class MemberService {
 
 
     private PostalCode checkPostalCode(PostalCode postalCode) {
-        PostalCode postalCodeRepo = postalCodeRepository.findByCityLabel(postalCode.getCityLabel());
-        if (postalCodeRepo != null && postalCodeRepo.equals(postalCode)) {
+        PostalCode postalCodeRepo = postalCodeRepository.findByActualPostalCodeAndCityLabel(postalCode.getActualPostalCode(),postalCode.getCityLabel());
+        if (postalCodeRepo != null) {
             return postalCodeRepo;
         }
         return postalCodeRepository.save(postalCode);
@@ -66,24 +68,20 @@ public class MemberService {
         if (memberFromDb.isEmpty()) {
             throw new MemberException("Could not find specified member.");
         }
-
 //        if (memberFromDb.get().getKeycloakId() == authentication.getName()) {
 //            throw new MemberException("Not authorized");
 //        }
         else return memberFromDb.get();
     }
 
-    private MembershipLvl checkMemberShipLevel(UpdateMembershipLevelDto updateMembershipLevelDto) throws MemberException {
-        if (updateMembershipLevelDto == null) {
-            throw new MemberException("Wrong input given: please select a valid Membershiplevel (bronze, silver or gold).");
-        }
-        else if (updateMembershipLevelDto.membershipLvl().equalsIgnoreCase("bronze")) {
+    private MembershipLvl checkMemberShipLevel(NewMemberDto newMemberDto) throws MemberException {
+        if (newMemberDto.getMembershiplevel() == null || newMemberDto.getMembershiplevel().isEmpty() || newMemberDto.getMembershiplevel().equalsIgnoreCase("bronze")) {
             return MembershipLvl.BRONZE;
         }
-        else if (updateMembershipLevelDto.membershipLvl().equalsIgnoreCase("silver")) {
+        else if (newMemberDto.getMembershiplevel().equalsIgnoreCase("silver")) {
             return MembershipLvl.SILVER;
         }
-        else if (updateMembershipLevelDto.membershipLvl().equalsIgnoreCase("gold")) {
+        else if (newMemberDto.getMembershiplevel().equalsIgnoreCase("gold")) {
             return MembershipLvl.GOLD;
         }
         else {
@@ -91,9 +89,10 @@ public class MemberService {
         }
     }
 
-    public void updateMembershipLevel(UpdateMembershipLevelDto updateMembershipLevelDto, Long id, Authentication authentication) throws MemberException {
-        Member memberToUpdate = checkMember(id, authentication);
-        memberToUpdate.setMembershipLvl(checkMemberShipLevel(updateMembershipLevelDto));
-        memberRepository.save(memberToUpdate);
-    }
+
+//    public void updateMembershipLevel(UpdateMembershipLevelDto updateMembershipLevelDto, Long id, Authentication authentication) throws MemberException {
+//        Member memberToUpdate = checkMember(id, authentication);
+//        memberToUpdate.setMembershipLvl(checkMemberShipLevel(updateMembershipLevelDto));
+//        memberRepository.save(memberToUpdate);
+//    }
 }

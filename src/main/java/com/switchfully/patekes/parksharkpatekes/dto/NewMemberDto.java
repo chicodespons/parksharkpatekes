@@ -17,5 +17,6 @@ public class NewMemberDto {
     private String phonenumber;
     private LicensePlate licensePlate;
     private Address address;
+    private String membershiplevel;
 
 }

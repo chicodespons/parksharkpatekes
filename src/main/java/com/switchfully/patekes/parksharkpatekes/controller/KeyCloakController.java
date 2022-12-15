@@ -26,15 +26,14 @@ public class KeyCloakController {
     }
 
     @RequestMapping(method = RequestMethod.POST, consumes = "application/json", produces = "application/json")
-    public void createUser( @RequestBody NewMemberDto newMemberDto) throws KeyCloakCantMakeUserException {
+    public void createUser( @RequestBody NewMemberDto newMemberDto) throws KeyCloakCantMakeUserException, MemberException {
         keyCloakService.addUser(newMemberDto);
         memberService.addUser(newMemberDto);
     }
 
-    @PutMapping(path = "/membershiplevel/{id}", consumes = "application/json")
-    @PreAuthorize("hasAnyAuthority('MEMBER')")
-    public void updateMembershipLevel(@RequestBody UpdateMembershipLevelDto updateMembershipLevelDto, @PathVariable Long id, Authentication authentication) throws MemberException {
-        memberService.updateMembershipLevel(updateMembershipLevelDto, id, authentication);
-
-    }
+//    @PutMapping(path = "/membershiplevel/{id}", consumes = "application/json")
+//    public void updateMembershipLevel(@RequestBody UpdateMembershipLevelDto updateMembershipLevelDto, @PathVariable Long id, Authentication authentication) throws MemberException {
+//        memberService.updateMembershipLevel(updateMembershipLevelDto, id, authentication);
+//
+//    }
 }
