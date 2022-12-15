@@ -48,12 +48,12 @@ public class ParkingController {
     @PostMapping(path = "allocation/start", consumes = "application/json", produces = "application/json")
     @ResponseStatus(CREATED)
     @PreAuthorize("hasAnyAuthority('MEMBER')")
-    public ParkingAllocationDto allocateParkingSpot(@RequestBody StartParkingAllocationRequestDto startParkingAllocationRequestDto,
+    public ParkingAllocationDto allocateParkingSpot(@RequestHeader String authorization, @RequestBody StartParkingAllocationRequestDto startParkingAllocationRequestDto,
                                                     BindingResult bindingResult) throws ParkingLotException, MemberException, ParkingAllocationException, LicencePlateException {
         if (bindingResult.hasErrors()) {
             throw new ParkingAllocationException("Some fields were not filled in properly.");
         }
-        return parkingAllocationService.allocateParkingSpot(startParkingAllocationRequestDto);
+        return parkingAllocationService.allocateParkingSpot(autorization, startParkingAllocationRequestDto);
     }
 
     @PutMapping(path = "allocation/stop", consumes = "application/json", produces = "application/json")

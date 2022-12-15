@@ -14,6 +14,8 @@ import com.switchfully.patekes.parksharkpatekes.repository.LicensePlateRepositor
 import com.switchfully.patekes.parksharkpatekes.repository.MemberRepository;
 import com.switchfully.patekes.parksharkpatekes.repository.ParkingAllocationRepository;
 import com.switchfully.patekes.parksharkpatekes.repository.ParkingLotRepository;
+import com.switchfully.patekes.parksharkpatekes.security.TokenDecoder;
+import net.minidev.json.parser.ParseException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -49,8 +51,8 @@ public class ParkingAllocationService {
     }
 
 
-    public ParkingAllocationDto allocateParkingSpot(StartParkingAllocationRequestDto parkingAllocationRequestDto) throws MemberException, ParkingLotException, LicencePlateException {
-        Member member = validateMember(parkingAllocationRequestDto.getMemberId());
+    public ParkingAllocationDto allocateParkingSpot(String authorization, StartParkingAllocationRequestDto parkingAllocationRequestDto) throws MemberException, ParkingLotException, LicencePlateException, ParseException {
+        Member member = validateMember(authorization);
         ParkingLot parkingLot = validateParkingLot(parkingAllocationRequestDto.getParkingLotId());
         LicensePlate licensePlate = validateLicensePlate(parkingAllocationRequestDto.getLicensePlate(), member.getMembershipLvl().equals(MembershipLvl.GOLD));
 
@@ -60,8 +62,8 @@ public class ParkingAllocationService {
         return parkingAllocationMapper.toDto(parkingAllocationRepository.findById(newParkingAllocation.getId()).get());
     }
 
-    private Member validateMember(Long memberId) throws MemberException {
-        Optional<Member> memberFromDb = memberRepository.findById(memberId);
+    private Member validateMember(String authorization) throws MemberException, ParseException {
+        Optional<Member> memberFromDb = memberRepository.findByEmail(TokenDecoder.tokenDecode(authorization));
         if (memberFromDb.isEmpty()) {
             throw new MemberException("Could not find specified member.");
         }
