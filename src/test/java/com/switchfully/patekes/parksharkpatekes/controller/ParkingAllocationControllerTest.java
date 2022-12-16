@@ -26,12 +26,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class ParkingAllocationControllerTest {
     @LocalServerPort
     private int port;
-    private final static String URL = "https://keycloak.switchfully.com/auth/realms/parksharkpatekes/protocol/openid-connect/token";
-    private static String response;
     @Autowired
     private ParkingLotService parkingLotService;
-    @Autowired
-    private ParkingLotRepository parkingLotRepository;
     @Autowired
     private DivisionRepository divisionRepository;
     @Autowired
@@ -41,15 +37,9 @@ public class ParkingAllocationControllerTest {
     @Autowired
     private PostalCodeRepository postalCodeRepository;
     @Autowired
-    private ContactPersonRepository contactPersonRepository;
-    @Autowired
-    private MemberRepository memberRepository;
-
-    @Autowired
     private MemberService memberService;
     @Autowired
     private ParkingLotMapper parkingLotMapper;
-
     private static String adminTokenAsString;
     private static String goldMemberTokenAsString;
     private LicensePlate testLicensePlate;
@@ -87,10 +77,6 @@ public class ParkingAllocationControllerTest {
 
     LicensePlate setUpLicensePlate() {
         return licensePlateRepository.save(new LicensePlate("1TES1", "Belgium"));
-    }
-
-    Member setUpMember() {
-        return new Member(new Name("Abraham", "Lincoln"), "123", "gold@email.com", "password", MembershipLvl.GOLD, testLicensePlate, addressRepository.save(new Address("flodderstraat", 180, postalCodeRepository.save(new PostalCode(9100, "SNC")))));
     }
 
     Division setUpTestDiv() {
