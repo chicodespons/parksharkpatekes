@@ -32,21 +32,10 @@ public class ParkingController {
 
     @GetMapping(path = "allocation", produces = "application/json")
     @ResponseStatus(OK)
-//    @PreAuthorize("hasAnyAuthority('ADMIN')")
-    public List<ParkingAllocationOverviewDto> getAllParkingAllocations(Authentication authentication,
-                                                                       @RequestParam(required = false, defaultValue = "100") int limit,
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
+    public List<ParkingAllocationOverviewDto> getAllParkingAllocations(@RequestParam(required = false, defaultValue = "100") int limit,
                                                                        @RequestParam(required = false) Optional<Boolean> isActive,
                                                                        @RequestParam(required = false, defaultValue = "true") boolean ascending) {
-
-
-//        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-//
-//        KeycloakUsernameConverter converter = new KeycloakUsernameConverter();
-//        System.out.println(converter.convert((Jwt) principal));
-
-        System.out.println(authentication.getName());
-
-
         return parkingAllocationService.getAllAllocations(limit, isActive, ascending);
     }
 
@@ -63,7 +52,7 @@ public class ParkingController {
 
     @PutMapping(path = "allocation", consumes = "application/json", produces = "application/json")
     @ResponseStatus(CREATED)
-//    @PreAuthorize("hasAnyAuthority('MEMBER')")
+    @PreAuthorize("hasAnyAuthority('MEMBER')")
     public ParkingAllocationDto deAllocateParkingSpot(@RequestHeader String authorization, @RequestBody EndParkingAllocationRequestDto endParkingAllocationRequestDto,
                                                     BindingResult bindingResult) throws MemberException, ParkingAllocationException, ParseException {
         if (bindingResult.hasErrors()) {
