@@ -4,6 +4,8 @@ import lombok.Data;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import java.util.Objects;
 
 @Entity
@@ -11,6 +13,7 @@ import java.util.Objects;
 public class LicensePlate {
     @Id
     private String plateId;
+
     private String issuingCountry;
 
     public LicensePlate(String plateId, String issuingCountry) {

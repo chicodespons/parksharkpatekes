@@ -77,4 +77,23 @@ class KeyCloakControllerTest {
                 assertTrue(memberService.getAllMembersAsMembers().contains(newMember));
 
     }
+
+    @Test
+    @DirtiesContext
+    void createUser_whenGivenBadDtoEmail_doNotAddMemberToDatabase(){
+        NewMemberDto newMemberDto = new NewMemberDto("test", "", "123456789",
+                new Name("testy", "testerson"),"123456789", new LicensePlate("testplate", "Belgium"),
+                new Address("testmemberstreet", 10, new PostalCode(5555, "DE")),
+                "BRONZE");
+
+        Member newMember = new Member(new Name("testy", "testerson"), "123456789",
+                "","123456789",MembershipLvl.BRONZE,new LicensePlate("testplate", "Belgium"),
+                new Address("testmemberstreet", 10, new PostalCode(5555, "DE")));
+
+        RestAssured.given().port(port)
+                .contentType("application/json").body(newMemberDto)
+                .when().post("parksharkpatekes/user")
+                .then().statusCode(400);
+
+    }
 }

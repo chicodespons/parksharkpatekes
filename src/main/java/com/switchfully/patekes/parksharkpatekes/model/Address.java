@@ -3,6 +3,9 @@ package com.switchfully.patekes.parksharkpatekes.model;
 import lombok.Data;
 
 import javax.persistence.*;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import java.util.Objects;
 
 @Entity
@@ -13,7 +16,9 @@ public class Address {
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "address_seq")
     private long id;
     private String streetName;
+
     private int number;
+
     @ManyToOne
     private PostalCode postalCode;
 

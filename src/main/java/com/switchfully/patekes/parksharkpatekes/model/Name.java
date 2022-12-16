@@ -4,12 +4,16 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
 import javax.persistence.Embeddable;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 
 @Embeddable
 @Getter
 @EqualsAndHashCode
 public final class Name {
+
     private final String firstname;
+
     private final String lastname;
 
     public Name() {

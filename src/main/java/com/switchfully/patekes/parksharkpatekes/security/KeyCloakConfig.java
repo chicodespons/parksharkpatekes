@@ -15,9 +15,9 @@ public class KeyCloakConfig {
     final static String userName = "therealadmin";
     final static String password = "password";
 
-    public KeyCloakConfig(){
-
-    }
+//    public KeyCloakConfig(){
+//
+//    }
 
 
     public static Keycloak getInstance(){

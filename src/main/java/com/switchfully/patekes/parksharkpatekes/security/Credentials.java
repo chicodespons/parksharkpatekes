@@ -11,4 +11,5 @@ public class Credentials {
         passwordCredentials.setValue(password);
         return passwordCredentials;
     }
+
 }

@@ -6,6 +6,7 @@ import com.switchfully.patekes.parksharkpatekes.model.Name;
 import lombok.Getter;
 import lombok.Setter;
 
+import javax.persistence.Embedded;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
@@ -22,16 +23,15 @@ public class NewMemberDto {
     @NotEmpty
     private String password;
     @NotNull
-    @NotEmpty
+    @Embedded
     private Name name;
     @NotNull
     @NotEmpty
     private String phonenumber;
     @NotNull
-    @NotEmpty
     private LicensePlate licensePlate;
+
     @NotNull
-    @NotEmpty
     private Address address;
     private String membershiplevel;
 
