@@ -1,5 +1,6 @@
 package com.switchfully.patekes.parksharkpatekes.controller;
 
+import com.switchfully.patekes.parksharkpatekes.dto.MemberDto;
 import com.switchfully.patekes.parksharkpatekes.dto.NewMemberDto;
 import com.switchfully.patekes.parksharkpatekes.exceptions.KeyCloakCantMakeUserException;
 import com.switchfully.patekes.parksharkpatekes.exceptions.MemberException;
@@ -23,9 +24,9 @@ public class KeyCloakController {
 
     @RequestMapping(method = RequestMethod.POST, consumes = "application/json", produces = "application/json")
     @ResponseStatus(CREATED)
-    public void createUser( @RequestBody NewMemberDto newMemberDto) throws KeyCloakCantMakeUserException, MemberException {
+    public MemberDto createUser(@RequestBody NewMemberDto newMemberDto) throws KeyCloakCantMakeUserException, MemberException {
         keyCloakService.addUser(newMemberDto);
-        memberService.addUser(newMemberDto);
+        return memberService.addUser(newMemberDto);
     }
 
 }
