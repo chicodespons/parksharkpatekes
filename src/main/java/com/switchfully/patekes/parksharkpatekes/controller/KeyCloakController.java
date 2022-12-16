@@ -28,7 +28,8 @@ public class KeyCloakController {
     @ResponseStatus(CREATED)
     public MemberDto createUser(@RequestBody NewMemberDto newMemberDto) throws KeyCloakCantMakeUserException, MemberException {
         keyCloakService.addUser(newMemberDto);
-        memberService.addUser(newMemberDto);
+        return memberService.addUser(newMemberDto);
+
     }
 
 }
