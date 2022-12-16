@@ -35,7 +35,7 @@ public class MemberService {
     }
 
 
-    public void addUser(NewMemberDto newMemberDto) throws MemberException {
+    public MemberDto addUser(NewMemberDto newMemberDto) throws MemberException {
         // alle elementen die gesaved moeten worden in volgorde voor dat de eigenlijke memeber kan gesaved worden
         Member member = memberMapper.CreateMemberfromMemberDto(newMemberDto);
         MembershipLvl membershipLvl = checkMemberShipLevel(newMemberDto.getMembershiplevel());
@@ -45,7 +45,7 @@ public class MemberService {
         licensePlateRepository.save(licensePlate);
         Address address = checkAddress(member.getAddress());
         member.setAddress(address);
-        memberRepository.save(member);
+        return memberMapper.toDto(memberRepository.save(member));
     }
 
     public List<MemberDto> getAllMembers() {

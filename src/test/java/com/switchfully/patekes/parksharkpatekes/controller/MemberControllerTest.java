@@ -66,11 +66,23 @@ public class MemberControllerTest {
                 .extract().as(JSONObject.class);
         tokenAsString = response.getAsString("access_token");
 
+    }
+
+    void createTestMembers() throws MemberException {
+        RestAssured
+                .given().port(port).header("Authorization", "Bearer " + tokenAsString).contentType("application/json").body(testMemberBronze)
+                .when().post("parksharkpatekes/user")
+                .then().statusCode(201);
+        RestAssured
+                .given().port(port).header("Authorization", "Bearer " + tokenAsString).contentType("application/json").body(testMemberGold)
+                .when().post("parksharkpatekes/user")
+                .then().statusCode(201);
+
         bronzeToken = RestAssured
                 .given().baseUri("https://keycloak.switchfully.com")
                 .contentType("application/x-www-form-urlencoded; charset=utf-8")
                 .formParam("username", "bronze@mail.com")
-                .formParam("password", "password")
+                .formParam("password", "pwd")
                 .formParam("grant_type", "password")
                 .formParam("client_id", "parkshark-patekes")
                 .formParam("client_secret", "9SqtwsMTNVNqYFG9eP1rGgcgkKGpWNIA")
@@ -82,7 +94,7 @@ public class MemberControllerTest {
                 .given().baseUri("https://keycloak.switchfully.com")
                 .contentType("application/x-www-form-urlencoded; charset=utf-8")
                 .formParam("username", "gold@mail.com")
-                .formParam("password", "password")
+                .formParam("password", "pwd")
                 .formParam("grant_type", "password")
                 .formParam("client_id", "parkshark-patekes")
                 .formParam("client_secret", "9SqtwsMTNVNqYFG9eP1rGgcgkKGpWNIA")
@@ -90,11 +102,7 @@ public class MemberControllerTest {
                 .post("/auth/realms/parksharkpatekes/protocol/openid-connect/token")
                 .then()
                 .extract().as(JSONObject.class).getAsString("access_token");
-    }
 
-    void createTestMembers() throws MemberException {
-        memberService.addUser(testMemberBronze);
-        memberService.addUser(testMemberGold);
     }
 
     @Test
@@ -122,19 +130,61 @@ public class MemberControllerTest {
         assertEquals(result.get(0), expectedMemberDTO);
     }
 
-//    @Test
-//    @DirtiesContext
-//    void updateMembershipLevelBronzeToSilver_HappyPath() throws MemberException {
-//        createTestMembers();
-//        System.out.println();
-//        UpdateMembershipLevelDto updateMembershipLevelDto = new UpdateMembershipLevelDto("silver");
-//        MemberDto result =
-//                RestAssured.given().port(port).header("Authorization", "Bearer " + bronzeToken).contentType("application/json").body(updateMembershipLevelDto)
-//                        .when().put("member/membershiplevel/1")
-//                        .then().statusCode(200).and().extract().as(MemberDto.class);
-//
-//        assertEquals(MembershipLvl.SILVER, result.membershipLvl());
-//        assertEquals(MembershipLvl.SILVER,memberRepository.findAll().get(0).getMembershipLvl());
-//
-//    }
+    @Test
+    @DirtiesContext
+    void updateMembershipLevelBronzeToSilver_HappyPath() throws MemberException {
+        createTestMembers();
+        System.out.println();
+        UpdateMembershipLevelDto updateMembershipLevelDto = new UpdateMembershipLevelDto("silver");
+        MemberDto result =
+                RestAssured.given().port(port).header("Authorization", "Bearer " + bronzeToken).contentType("application/json").body(updateMembershipLevelDto)
+                        .when().put("member/membershiplevel/1")
+                        .then().statusCode(200).and().extract().as(MemberDto.class);
+
+        assertEquals(MembershipLvl.SILVER, result.membershipLvl());
+        assertEquals(MembershipLvl.SILVER,memberRepository.findAll().get(0).getMembershipLvl());
+    }
+
+    @Test
+    @DirtiesContext
+    void updateMembershipLevelBronzeToSilver_WhenWrongUser_ExceptionAndCustomMessage() throws MemberException {
+        createTestMembers();
+        System.out.println();
+        UpdateMembershipLevelDto updateMembershipLevelDto = new UpdateMembershipLevelDto("silver");
+        JSONObject result =
+                RestAssured.given().port(port).header("Authorization", "Bearer " + goldToken).contentType("application/json").body(updateMembershipLevelDto)
+                        .when().put("member/membershiplevel/1")
+                        .then().statusCode(400).and().extract().as(JSONObject.class);
+
+        assertEquals("Not authorized, tried to update wrong account", result.getAsString("message"));
+    }
+    @Test
+    @DirtiesContext
+    void updateMembershipLevel_WhenWrongInput_ExceptionAndCustomMessage() throws MemberException {
+        createTestMembers();
+        System.out.println();
+        UpdateMembershipLevelDto updateMembershipLevelDto = new UpdateMembershipLevelDto("feznhgeyuf");
+        JSONObject result =
+                RestAssured.given().port(port).header("Authorization", "Bearer " + bronzeToken).contentType("application/json").body(updateMembershipLevelDto)
+                        .when().put("member/membershiplevel/1")
+                        .then().statusCode(400).and().extract().as(JSONObject.class);
+
+        assertEquals("Wrong input given: please select a valid Membershiplevel (bronze, silver or gold).", result.getAsString("message"));
+    }
+
+    @Test
+    @DirtiesContext
+    void updateMembershipLevelBronzeToSilver_WhenIdNotInDatabase_ExceptionAndCustomMessage() throws MemberException {
+        createTestMembers();
+        System.out.println();
+        UpdateMembershipLevelDto updateMembershipLevelDto = new UpdateMembershipLevelDto("feznhgeyuf");
+        JSONObject result =
+                RestAssured.given().port(port).header("Authorization", "Bearer " + bronzeToken).contentType("application/json").body(updateMembershipLevelDto)
+                        .when().put("member/membershiplevel/77")
+                        .then().statusCode(400).and().extract().as(JSONObject.class);
+
+        assertEquals("Could not find specified member.", result.getAsString("message"));
+    }
+
+
 }
