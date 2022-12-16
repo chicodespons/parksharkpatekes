@@ -1,6 +1,7 @@
 package com.switchfully.patekes.parksharkpatekes.controller;
 
 import com.switchfully.patekes.parksharkpatekes.dto.*;
+import com.switchfully.patekes.parksharkpatekes.exceptions.KeyCloakCantMakeUserException;
 import com.switchfully.patekes.parksharkpatekes.exceptions.MemberException;
 import com.switchfully.patekes.parksharkpatekes.mapper.ParkingLotMapper;
 import com.switchfully.patekes.parksharkpatekes.model.*;
@@ -92,63 +93,18 @@ public class ParkingAllocationControllerTest {
                 .then()
                 .extract().as(JSONObject.class);
         goldMemberTokenAsString = goldResponseMember.getAsString("access_token");
-
-//        JSONObject bronzeResponseMember = RestAssured
-//                .given().baseUri("https://keycloak.switchfully.com")
-//                .contentType("application/x-www-form-urlencoded; charset=utf-8")
-//                .formParam("username", "hfffry@email.com")
-//                .formParam("password", "password")
-//                .formParam("grant_type", "password")
-//                .formParam("client_id", "parkshark-patekes")
-//                .formParam("client_secret", "9SqtwsMTNVNqYFG9eP1rGgcgkKGpWNIA")
-//                .when()
-//                .post("/auth/realms/parksharkpatekes/protocol/openid-connect/token")
-//                .then()
-//                .extract().as(JSONObject.class);
-//        bronzeMemberTokenAsString = bronzeResponseMember.getAsString("access_token");
     }
 
-//    void setUpVariables() {
-//        testPostalCode = setUpPostalcode();
-//        testAddress = setupAddress();
-//        testMember = setUpMember();
-//        testLicensePlate = setUpLicensePlate();
-//        testDivision = setUpDivision();
-//        testParkingLot = setUpParkingLot();
-//    }
-//
-//    Division setUpDivision() {
-//        return divisionRepository.save(new Division("testDiv", "originalCompany", "testDir"));
-//    }
-//
+
     LicensePlate setUpLicensePlate() {
         return licensePlateRepository.save(new LicensePlate("1TES1", "Belgium"));
     }
-//
-//    Address setupAddress() {
-//        return addressRepository.save(new Address("flodderstraat", 180, postalCodeRepository.save(new PostalCode(9100, "SNC"))));
-//    }
-//
-//    PostalCode setUpPostalcode() {
-//        return postalCodeRepository.save(new PostalCode(9100, "SNC"));
-//    }
-//
-//    ContactPerson setupContactPerson() {
-//        return contactPersonRepository.save(new ContactPerson(new Name("franky","testman"), "0479586525", "01212121212", "vettige@frank.test", addressRepository.save(new Address("flodderstraat", 180, postalCodeRepository.save(new PostalCode(9100, "SNC"))))));
-//    }
-//
-//    ParkingLot setUpParkingLot() {
-//        return parkingLotRepository.save(
-//                new ParkingLot(testDivision, "testLot2", contactPersonRepository.save(new ContactPerson(new Name("franky","testman"), "0479586525", "01212121212", "vettige@frank.test", addressRepository.save(new Address("flodderstraat", 180, postalCodeRepository.save(new PostalCode(9100, "SNC")))))), addressRepository.save(new Address("flodderstraat", 180, postalCodeRepository.save(new PostalCode(9100, "SNC")))), 1000, Category.ABOVE_GROUND, 5)
-//        );
-//    }
-//
+
     Member setUpMember() {
         return
                 new Member(new Name("Abraham", "Lincoln"), "123", "gold@email.com", "password", MembershipLvl.GOLD, testLicensePlate, addressRepository.save(new Address("flodderstraat", 180, postalCodeRepository.save(new PostalCode(9100, "SNC")))))
         ;
     }
-//
     Division setUpTestDiv() {
         return divisionRepository.save(new Division("testDiv", "originalCompany", "testDir"));
     }
@@ -166,7 +122,7 @@ public class ParkingAllocationControllerTest {
 
     NewMemberDto setUpNewMemberDto(LicensePlate fakeLP) {
         return new NewMemberDto("gold@email.com", "gold@email.com", "password", new Name("test", "gold"), "040000000",
-                fakeLP, new Address("teststraat", 201, new PostalCode(9111, "NKW")), "BRONZE");
+                fakeLP, new Address("teststraat", 201, new PostalCode(9111, "NKW")), "GOLD");
     }
 
     @Test
@@ -217,25 +173,30 @@ public class ParkingAllocationControllerTest {
         assertFalse(result.isActive());
     }
 
-//    @Test
-//    @DirtiesContext
-//    void allocateParkingSpotWithDiffrentPlate_whenGoldMember_happyPath() {
-//        Division testDiv = setUpTestDiv();
-//        CreateParkingLotDTO testParkingLotDto = setUpCreateParkingLotDTO(testDiv);
-//        ParkingLotDTO testParkingLot = parkingLotService.addParkingLot(testParkingLotDto);
-//        testLicensePlate = setUpLicensePlate();
-//        LicensePlate testPlate2 = licensePlateRepository.save(new LicensePlate("BBB-222", "NL"));
-//        memberService.addUser(setUpNewMemberDto(testLicensePlate));
-//        StartParkingAllocationRequestDto allocationRequestDto = new StartParkingAllocationRequestDto(testPlate2, testParkingLot.id());
-//
-//        ParkingAllocationDto result =
-//                RestAssured
-//                        .given().port(port).header("Authorization", "Bearer " + goldMemberTokenAsString).contentType("application/json").body(allocationRequestDto)
-//                        .when().post("/parking/allocation")
-//                        .then().statusCode(201).and().extract().as(ParkingAllocationDto.class);
-//
-//        assertEquals(result.getLicensePlate(), testPlate2);
-//        assertEquals(parkingLotMapper.toDTO(result.getParkingLot()), testParkingLot);
-//        assertTrue(result.isActive());
-//    }
+    @Test
+    @DirtiesContext
+    void allocateParkingSpotWithDiffrentPlate_whenGoldMember_happyPath() throws MemberException, KeyCloakCantMakeUserException {
+        Division testDiv = setUpTestDiv();
+        CreateParkingLotDTO testParkingLotDto = setUpCreateParkingLotDTO(testDiv);
+        ParkingLotDTO testParkingLot = parkingLotService.addParkingLot(testParkingLotDto);
+        testLicensePlate = setUpLicensePlate();
+        NewMemberDto newMemberDto = setUpNewMemberDto(testLicensePlate);
+        LicensePlate testPlate2 = licensePlateRepository.save(new LicensePlate("BBB-222", "NL"));
+
+        RestAssured
+                .given().port(port).header("Authorization", "Bearer " + adminTokenAsString).contentType("application/json").body(newMemberDto)
+                .when().post("parksharkpatekes/user")
+                .then().statusCode(201);
+        StartParkingAllocationRequestDto allocationRequestDto = new StartParkingAllocationRequestDto(new LicensePlate("BBB-222", "NL"), testParkingLot.id());
+
+        ParkingAllocationDto result =
+                RestAssured
+                        .given().port(port).header("Authorization", "Bearer " + goldMemberTokenAsString).contentType("application/json").body(allocationRequestDto)
+                        .when().post("/parking/allocation")
+                        .then().statusCode(201).and().extract().as(ParkingAllocationDto.class);
+
+        assertEquals(result.getLicensePlate(), testPlate2);
+        assertEquals(parkingLotMapper.toDTO(result.getParkingLot()), testParkingLot);
+        assertTrue(result.isActive());
+    }
 }
