@@ -63,7 +63,7 @@ public class ParkingController {
 
     @PutMapping(path = "allocation", consumes = "application/json", produces = "application/json")
     @ResponseStatus(CREATED)
-//    @PreAuthorize("hasAnyAuthority('MEMBER')")
+    @PreAuthorize("hasAnyAuthority('MEMBER')")
     public ParkingAllocationDto deAllocateParkingSpot(@RequestHeader String authorization, @RequestBody EndParkingAllocationRequestDto endParkingAllocationRequestDto,
                                                     BindingResult bindingResult) throws MemberException, ParkingAllocationException, ParseException {
         if (bindingResult.hasErrors()) {
