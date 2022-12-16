@@ -75,12 +75,14 @@ public class ParkingAllocationService {
 
     private LicensePlate validateLicensePlate(LicensePlate licensePlate, LicensePlate membersPlate, boolean hasGoldLevel) throws LicencePlateException {
         Optional<LicensePlate> licensePlateFromDb = licensePlateRepository.findById(licensePlate.getPlateId());
-        if (licensePlateFromDb.isEmpty() && hasGoldLevel) {
-            licensePlateRepository.save(licensePlate);
-        } else if (licensePlateFromDb.isEmpty()) {
-            throw new LicencePlateException("Could not find license plate.");
+        if (licensePlateFromDb.isEmpty()) {
+            if (hasGoldLevel) {
+                licensePlateRepository.save(licensePlate);
+            } else {
+                throw new LicencePlateException("Could not find license plate. If you wish to register a different plate than yours you will need to upgrade to a gold membership.");
+            }
         } else if (!hasGoldLevel && !licensePlateFromDb.get().equals(membersPlate)) {
-            throw new LicencePlateException("Only gold members can register any plate.");
+            throw new LicencePlateException("This plate is not tied to your account. Upgrade to a gold membership to allocate a spot for this plate.");
         }
         return licensePlateRepository.findById(licensePlate.getPlateId()).get();
     }
