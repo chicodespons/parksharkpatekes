@@ -161,7 +161,7 @@ public class ParkingAllocationControllerTest {
         LicensePlate testPlate2 = licensePlateRepository.save(new LicensePlate("BBB-222", "NL"));
 
         RestAssured
-                .given().port(port).header("Authorization", "Bearer " + adminTokenAsString).contentType("application/json").body(newMemberDto)
+                .given().port(port).contentType("application/json").body(newMemberDto)
                 .when().post("parksharkpatekes/user")
                 .then().statusCode(201);
         StartParkingAllocationRequestDto allocationRequestDto = new StartParkingAllocationRequestDto(new LicensePlate("BBB-222", "NL"), testParkingLot.id());
