@@ -8,8 +8,6 @@ import com.switchfully.patekes.parksharkpatekes.service.KeyCloakService;
 import com.switchfully.patekes.parksharkpatekes.service.MemberService;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
-
 import static org.springframework.http.HttpStatus.CREATED;
 
 @RestController

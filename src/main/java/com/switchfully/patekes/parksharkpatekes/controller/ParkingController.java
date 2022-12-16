@@ -11,7 +11,6 @@ import com.switchfully.patekes.parksharkpatekes.exceptions.ParkingLotException;
 import com.switchfully.patekes.parksharkpatekes.service.ParkingAllocationService;
 import net.minidev.json.parser.ParseException;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
