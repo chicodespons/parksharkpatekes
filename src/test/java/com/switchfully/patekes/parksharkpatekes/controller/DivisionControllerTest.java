@@ -84,6 +84,7 @@ public class DivisionControllerTest {
 
     @Test
     void createDivision_whenAdminAndEmptyFields_thenExceptionAndCustomMessage() {
+        Locale.setDefault(Locale.ENGLISH);
         setUpTestDivisionDatabase();
         CreateDivisionDto createDivisionDto = new CreateDivisionDto("", "", "");
         JSONObject message =

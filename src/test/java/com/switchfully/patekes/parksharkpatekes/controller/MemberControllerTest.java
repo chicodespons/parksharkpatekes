@@ -3,8 +3,10 @@ package com.switchfully.patekes.parksharkpatekes.controller;
 
 import com.switchfully.patekes.parksharkpatekes.dto.MemberDto;
 import com.switchfully.patekes.parksharkpatekes.dto.NewMemberDto;
+import com.switchfully.patekes.parksharkpatekes.dto.UpdateMembershipLevelDto;
 import com.switchfully.patekes.parksharkpatekes.exceptions.MemberException;
 import com.switchfully.patekes.parksharkpatekes.model.*;
+import com.switchfully.patekes.parksharkpatekes.repository.DivisionRepository;
 import com.switchfully.patekes.parksharkpatekes.repository.MemberRepository;
 import com.switchfully.patekes.parksharkpatekes.service.MemberService;
 import io.restassured.RestAssured;
@@ -34,8 +36,19 @@ public class MemberControllerTest {
     @Autowired
     private MemberRepository memberRepository;
 
-
+    private NewMemberDto testMemberBronze = new NewMemberDto("test", "bronze@mail.com", "pwd",
+            new Name("frany", "de vetttigaard"), "0478000000",
+            new LicensePlate("123456", "BE"),
+            new Address("MechelseSteenWeg", 78, new PostalCode(2000, "AN")), "bronze");
+    private NewMemberDto testMemberGold = new NewMemberDto("test", "gold@mail.com", "pwd",
+            new Name("frany", "de vetttigaard"), "0478000000",
+            new LicensePlate("123", "BE"),
+            new Address("MechelseSteenWeg", 78, new PostalCode(2000, "AN")), "gold");
     private static String tokenAsString;
+    private static String bronzeToken;
+    private static String goldToken;
+    @Autowired
+    private DivisionRepository divisionRepository;
 
     @BeforeAll
     static void setUp() {
@@ -52,6 +65,36 @@ public class MemberControllerTest {
                 .then()
                 .extract().as(JSONObject.class);
         tokenAsString = response.getAsString("access_token");
+
+        bronzeToken = RestAssured
+                .given().baseUri("https://keycloak.switchfully.com")
+                .contentType("application/x-www-form-urlencoded; charset=utf-8")
+                .formParam("username", "bronze@mail.com")
+                .formParam("password", "password")
+                .formParam("grant_type", "password")
+                .formParam("client_id", "parkshark-patekes")
+                .formParam("client_secret", "9SqtwsMTNVNqYFG9eP1rGgcgkKGpWNIA")
+                .when()
+                .post("/auth/realms/parksharkpatekes/protocol/openid-connect/token")
+                .then()
+                .extract().as(JSONObject.class).getAsString("access_token");
+        goldToken = RestAssured
+                .given().baseUri("https://keycloak.switchfully.com")
+                .contentType("application/x-www-form-urlencoded; charset=utf-8")
+                .formParam("username", "gold@mail.com")
+                .formParam("password", "password")
+                .formParam("grant_type", "password")
+                .formParam("client_id", "parkshark-patekes")
+                .formParam("client_secret", "9SqtwsMTNVNqYFG9eP1rGgcgkKGpWNIA")
+                .when()
+                .post("/auth/realms/parksharkpatekes/protocol/openid-connect/token")
+                .then()
+                .extract().as(JSONObject.class).getAsString("access_token");
+    }
+
+    void createTestMembers() throws MemberException {
+        memberService.addUser(testMemberBronze);
+        memberService.addUser(testMemberGold);
     }
 
     @Test
@@ -78,4 +121,20 @@ public class MemberControllerTest {
                         });
         assertEquals(result.get(0), expectedMemberDTO);
     }
+
+//    @Test
+//    @DirtiesContext
+//    void updateMembershipLevelBronzeToSilver_HappyPath() throws MemberException {
+//        createTestMembers();
+//        System.out.println();
+//        UpdateMembershipLevelDto updateMembershipLevelDto = new UpdateMembershipLevelDto("silver");
+//        MemberDto result =
+//                RestAssured.given().port(port).header("Authorization", "Bearer " + bronzeToken).contentType("application/json").body(updateMembershipLevelDto)
+//                        .when().put("member/membershiplevel/1")
+//                        .then().statusCode(200).and().extract().as(MemberDto.class);
+//
+//        assertEquals(MembershipLvl.SILVER, result.membershipLvl());
+//        assertEquals(MembershipLvl.SILVER,memberRepository.findAll().get(0).getMembershipLvl());
+//
+//    }
 }
