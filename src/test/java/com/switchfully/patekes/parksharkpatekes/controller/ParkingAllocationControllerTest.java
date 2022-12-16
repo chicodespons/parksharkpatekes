@@ -6,7 +6,6 @@ import com.switchfully.patekes.parksharkpatekes.exceptions.MemberException;
 import com.switchfully.patekes.parksharkpatekes.mapper.ParkingLotMapper;
 import com.switchfully.patekes.parksharkpatekes.model.*;
 import com.switchfully.patekes.parksharkpatekes.repository.*;
-import com.switchfully.patekes.parksharkpatekes.service.KeyCloakService;
 import com.switchfully.patekes.parksharkpatekes.service.MemberService;
 import com.switchfully.patekes.parksharkpatekes.service.ParkingLotService;
 import io.restassured.RestAssured;
@@ -34,13 +33,7 @@ public class ParkingAllocationControllerTest {
     @Autowired
     private LicensePlateRepository licensePlateRepository;
     @Autowired
-    private AddressRepository addressRepository;
-    @Autowired
-    private PostalCodeRepository postalCodeRepository;
-    @Autowired
     private MemberService memberService;
-    @Autowired
-    private KeyCloakService keyCloakService;
     @Autowired
     private ParkingLotMapper parkingLotMapper;
     private static String adminTokenAsString;
@@ -161,7 +154,7 @@ public class ParkingAllocationControllerTest {
         LicensePlate testPlate2 = licensePlateRepository.save(new LicensePlate("BBB-222", "NL"));
 
         RestAssured
-                .given().port(port).header("Authorization", "Bearer " + adminTokenAsString).contentType("application/json").body(newMemberDto)
+                .given().port(port).contentType("application/json").body(newMemberDto)
                 .when().post("parksharkpatekes/user")
                 .then().statusCode(201);
         StartParkingAllocationRequestDto allocationRequestDto = new StartParkingAllocationRequestDto(new LicensePlate("BBB-222", "NL"), testParkingLot.id());
