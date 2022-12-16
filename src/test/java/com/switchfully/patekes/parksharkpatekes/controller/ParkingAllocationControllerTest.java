@@ -5,6 +5,7 @@ import com.switchfully.patekes.parksharkpatekes.exceptions.MemberException;
 import com.switchfully.patekes.parksharkpatekes.mapper.ParkingLotMapper;
 import com.switchfully.patekes.parksharkpatekes.model.*;
 import com.switchfully.patekes.parksharkpatekes.repository.*;
+import com.switchfully.patekes.parksharkpatekes.service.KeyCloakService;
 import com.switchfully.patekes.parksharkpatekes.service.MemberService;
 import com.switchfully.patekes.parksharkpatekes.service.ParkingLotService;
 import io.restassured.RestAssured;
@@ -17,8 +18,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.annotation.DirtiesContext;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureTestDatabase
@@ -46,6 +46,8 @@ public class ParkingAllocationControllerTest {
 
     @Autowired
     private MemberService memberService;
+    @Autowired
+    private KeyCloakService keyCloakService;
     @Autowired
     private ParkingLotMapper parkingLotMapper;
 
@@ -186,6 +188,33 @@ public class ParkingAllocationControllerTest {
         assertEquals(result.getLicensePlate(), testLicensePlate);
         assertEquals(parkingLotMapper.toDTO(result.getParkingLot()), testParkingLot);
         assertTrue(result.isActive());
+    }
+
+    @Test
+    @DirtiesContext
+    void deAllocateParkingSpot_whenGoldMemberStopAlloc_happyPath() throws MemberException {
+        Division testDiv = setUpTestDiv();
+        CreateParkingLotDTO testParkingLotDto = setUpCreateParkingLotDTO(testDiv);
+        ParkingLotDTO testParkingLot = parkingLotService.addParkingLot(testParkingLotDto);
+        testLicensePlate = setUpLicensePlate();
+        memberService.addUser(setUpNewMemberDto(testLicensePlate));
+        StartParkingAllocationRequestDto allocationRequestDto = new StartParkingAllocationRequestDto(testLicensePlate, testParkingLot.id());
+
+
+        ParkingAllocationDto resultOfAlloc = RestAssured
+                .given().port(port).header("Authorization", "Bearer " + goldMemberTokenAsString).contentType("application/json").body(allocationRequestDto)
+                .when().post("/parking/allocation")
+                .then().statusCode(201).and().extract().as(ParkingAllocationDto.class);
+        EndParkingAllocationRequestDto deAllocationRequestDto = new EndParkingAllocationRequestDto(resultOfAlloc.getAllocationId());
+        ParkingAllocationDto result =
+                RestAssured
+                        .given().port(port).header("Authorization", "Bearer " + goldMemberTokenAsString).contentType("application/json").body(deAllocationRequestDto)
+                        .when().put("/parking/allocation")
+                        .then().statusCode(201).and().extract().as(ParkingAllocationDto.class);
+
+        assertEquals(result.getLicensePlate(), testLicensePlate);
+        assertEquals(parkingLotMapper.toDTO(result.getParkingLot()), testParkingLot);
+        assertFalse(result.isActive());
     }
 
 //    @Test
